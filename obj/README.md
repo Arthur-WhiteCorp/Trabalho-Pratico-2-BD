@@ -1,3 +1,3 @@
 # Diretório de Objetos
 
-Aqui ficam todos os arquivos.o
+Aqui ficam todos os arquivos .o
