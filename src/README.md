@@ -1,3 +1,3 @@
-# Diretório de Objetos
+# Diretório De Código Fonte
 
-Aqui ficam todos os arquivos.o
+Aqui ficam todos os arquivos .cpp
