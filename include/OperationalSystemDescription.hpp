@@ -5,14 +5,16 @@
 #include <sys/ioctl.h>
 #include <filesystem>
 #include <vector>
+#include <tuple>
 
+using DeviceInfo = std::tuple<std::string, unsigned long long, unsigned long, unsigned long, int>;
 
 class OperationalSystemDescription{
     private:
     struct Device{
         std::string device_name;
-        unsigned long device_size;
-        unsigned long  sector_size;
+        unsigned long long device_size;
+        unsigned long sector_size;
         unsigned long block_size;
         int sectors_per_block;
     };
@@ -20,15 +22,19 @@ class OperationalSystemDescription{
     std::string devices_path;
     std::vector<Device> devices; //vetor com meus dispositivos 
     
-    std::string getDevicesNames();
-    unsigned long getDeviceSize();
-    unsigned long getSectorSize();
-    unsigned long getBlockSize();
-    int getSectorPerBlock();
+    void setDeviceNames();
+    void setDeviceSize(int file_descriptor, Device *device);
+    void setSectorSize(int file_descriptor, Device *device);
+    void setBlockSize(int file_descriptor, Device *device);
+    void setSectorPerBlock(Device *device);
+    void setDevicesInformation();
+
 
     public:
     OperationalSystemDescription();
-      
+    std::vector<std::string> getDeviceNames();
+    std::vector<unsigned long long> getDeviceSizes();
+    std::vector<DeviceInfo> getDevicesInformation();
 
 };
 
