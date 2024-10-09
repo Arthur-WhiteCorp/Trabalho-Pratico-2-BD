@@ -7,7 +7,7 @@
 #include <vector>
 #include <tuple>
 
-using DeviceInfo = std::tuple<std::string, unsigned long long, unsigned long, unsigned long, int>;
+using DeviceInfo = std::tuple<std::string, unsigned long long, unsigned int, unsigned int, int>;
 
 class OperationalSystemDescription{
     private:

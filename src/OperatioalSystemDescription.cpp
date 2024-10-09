@@ -73,7 +73,7 @@ void  OperationalSystemDescription::setBlockSize(int fd, Device* device){
 
 }
 void  OperationalSystemDescription::setSectorPerBlock(Device* device){
-    unsigned long sectors_per_block = device->block_size / device->sector_size;
+    int sectors_per_block = device->block_size / device->sector_size;
     device->sectors_per_block = sectors_per_block;
 
 }
