@@ -55,17 +55,16 @@ void  OperationalSystemDescription::setDeviceSize(int fd, Device* device){
 };
 
 void  OperationalSystemDescription::setSectorSize(int fd, Device* device){
-    unsigned long sector_size;
+    unsigned int sector_size;
 
     if (ioctl(fd, BLKSSZGET, &sector_size) == -1) {
         std::cerr << "Error getting sector size" << std::endl;
     }
     device->sector_size = sector_size;
-    std::cout << sector_size << std::endl;
 
 }
 void  OperationalSystemDescription::setBlockSize(int fd, Device* device){
-    unsigned long block_size;
+    unsigned int block_size;
 
     if (ioctl(fd, BLKBSZGET, &block_size) == -1) {
         std::cerr << "Error getting device size" << std::endl;

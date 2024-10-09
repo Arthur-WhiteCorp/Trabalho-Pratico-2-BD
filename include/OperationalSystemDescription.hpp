@@ -14,8 +14,8 @@ class OperationalSystemDescription{
     struct Device{
         std::string device_name;
         unsigned long long device_size;
-        unsigned long sector_size;
-        unsigned long block_size;
+        unsigned int sector_size;
+        unsigned int block_size;
         int sectors_per_block;
     };
 
