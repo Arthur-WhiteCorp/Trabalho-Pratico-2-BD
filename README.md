@@ -12,7 +12,7 @@ Nome padrão: `my_project`
 ```
 Por padrão, `executable_name` é o último nome de projeto compilado, localizado em `project.config`. Todos os executáveis devem estar na pasta `/bin`.
 
-## Convenções de Nomenclatura:
+## Convenções de Nomeclatura:
 
 - **Nome de Classes**: `PascalCase`, exemplo: 
   ```cpp
