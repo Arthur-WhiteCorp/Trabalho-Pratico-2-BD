@@ -16,15 +16,22 @@ OperationalSystemDescription::OperationalSystemDescription(){
 void OperationalSystemDescription::setDeviceNames(){
     const std::filesystem::path path = devices_path;
     std::regex device_regex("^(sd[a-z]\\d*|hd[a-z]\\d*|nvme\\d+n\\d+|mmcblk\\d+p?\\d*)$");
+    std::vector<std::string> device_names;
 
     for(const auto& entry : std::filesystem::directory_iterator(path)){
         std::string device_name = entry.path().filename().string();
         if (std::regex_match(device_name, device_regex)){
-            Device device;
-            device.device_name = device_name;
-            devices.push_back(device);
+            device_names.push_back(device_name);
         }
     }
+
+    std::sort(device_names.begin(), device_names.end());
+
+    for (const auto& name : device_names) {
+        Device device;
+        device.device_name = name;
+        devices.push_back(device);
+    };
 }
 
 void OperationalSystemDescription::setDevicesInformation(){
@@ -100,17 +107,17 @@ std::vector<unsigned long long int> OperationalSystemDescription::getDeviceSizes
     return device_sizes;
 }
 
-std::vector<DeviceInfo> OperationalSystemDescription::getDevicesInformation(){
-    std::vector<DeviceInfo> devices_information;
+std::vector<Device> OperationalSystemDescription::getDevicesInformation(){
+    std::vector<Device> devices_information;
     for (const auto& device: devices){
-        std::string device_name = device.device_name;
-        unsigned long long device_size = device.device_size;
-        unsigned long sector_size = device.sector_size;
-        unsigned long block_size = device.block_size;
-        int sectors_per_block = device.sectors_per_block;
-        std::tuple device_information = std::make_tuple(device_name,device_size,sector_size,
-                                                        block_size,sectors_per_block);
-        devices_information.push_back(device_information);
+        Device my_device;
+        my_device.device_name  = device.device_name;
+        my_device.device_size = device.device_size;
+        my_device.sector_size = device.sector_size;
+        my_device.block_size = device.block_size;
+        my_device.sectors_per_block = device.sectors_per_block;
+        
+        devices_information.push_back(my_device);
     }
 
     return devices_information;
