@@ -1,12 +1,26 @@
 #include <iostream>
+#include <fstream>
 #include "../include/OperationalSystemDescription.hpp"
-#include <tuple>
 
-
-int main(){
+int main(int argc, char* argv[]){
     OperationalSystemDescription os_info;
     std::vector<Device> infos;
     infos = os_info.getDevicesInformation();
+
+    std::fstream my_csv;
+
+    if (argc !=2){
+        std::cout << "Número errado de argumentos, exemplo:"  << std::endl;
+        std::cout << "upload <file.csv>" << std::endl;
+        exit(1);
+    }
+
+    my_csv.open(argv[1],std::ios::in);
+
+    if (!my_csv.is_open()) {
+        std::cerr << "Error opening file: " << argv[1] << std::endl;
+        return 1; // Handle the error
+    }
 
     for (const auto& info:infos){
         std::string name = info.device_name;
@@ -22,6 +36,8 @@ int main(){
         std::cout << "Sectors per Block: " << sectors_per_block << std::endl;
         std::cout << "-----------------------" << std::endl; 
     }
+
+    
 
     
 
