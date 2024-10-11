@@ -50,13 +50,13 @@ int main(int argc, char* argv[]){
     
     std::cout << "arquivo lido com sucesso" << std::endl;
 
-    for (const auto& linha:linhas_do_csv){
-        for (const auto& campo:linha){
-            std::cout << campo << std::endl;
-
-        }
+    std::cout << "Numero de linhas" << std::size(linhas_do_csv) << std::endl;
+    for (const auto& campo:linhas_do_csv[0]){
+        std::cout << campo << std::endl;
 
     }
+
+    
 
     return 0;
 }
