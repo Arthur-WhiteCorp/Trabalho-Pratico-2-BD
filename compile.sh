@@ -33,7 +33,7 @@ fi
 
 for file in "${SRC_FILES[@]}"
 do  
-    g++ -c "$file" -o "./obj/$(basename "$file" .cpp).o"
+    g++ -I ./include -c "$file" -o "./obj/$(basename "$file" .cpp).o"
     if [ $? -eq 0 ]
     then 
         echo "$file compilado com sucesso"

@@ -1,13 +1,12 @@
 #include <iostream>
 #include <fstream>
-#include "../include/OperationalSystemDescription.hpp"
+#include "OperationalSystemDescription.hpp"
+#include "CSVReader.hpp"
 
 int main(int argc, char* argv[]){
     OperationalSystemDescription os_info;
     std::vector<Device> infos;
     infos = os_info.getDevicesInformation();
-
-    std::fstream my_csv;
 
     if (argc !=2){
         std::cout << "Número errado de argumentos, exemplo:"  << std::endl;
@@ -15,12 +14,8 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    my_csv.open(argv[1],std::ios::in);
-
-    if (!my_csv.is_open()) {
-        std::cerr << "Error opening file: " << argv[1] << std::endl;
-        return 1; // Handle the error
-    }
+    CSVReader data_base_csv = CSVReader(argv[1]);
+    data_base_csv.setNumeroDeColunas(7);
 
     for (const auto& info:infos){
         std::string name = info.device_name;
@@ -37,8 +32,17 @@ int main(int argc, char* argv[]){
         std::cout << "-----------------------" << std::endl; 
     }
 
-    
+    std::cout << std::endl;
+    std::cout << std::endl;
 
+    while (!data_base_csv.getArquivoTerminado())
+    {
+        for (const auto& campo:data_base_csv.getLineCSV()){
+            std::cout << campo << std::endl;
+        }
+    }
+    
+    std::cout << "arquivo lido com sucesso" << std::endl;
     
 
     return 0;

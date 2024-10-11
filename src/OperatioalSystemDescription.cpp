@@ -1,4 +1,4 @@
-#include "../include/OperationalSystemDescription.hpp"
+#include "OperationalSystemDescription.hpp"
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/fs.h>       
