@@ -13,8 +13,9 @@ CSVReader::CSVReader(std::string file_path){
         std::cerr << "Error opening file: " << file_path << std::endl;
         exit(1); // Handle the error
     }
-    numero_da_linha_atual = 0;
+    id_da_linha_atual = 0;
     numero_de_colunas = 0;
+    numero_de_linhas_lido = 0;
     arquivo_terminado = false;
 
 }
@@ -36,7 +37,8 @@ std::vector<std::string> CSVReader::getLineCSV(){
         if (std::regex_match(nova_linha_id,quoted_number_regex)){
             linha_atual.clear(); // limpa a linha atual se achar uma nova linha;
             std::string numero_sem_aspas = std::regex_replace(nova_linha_id, std::regex("\""), "");
-            numero_da_linha_atual = stoi(numero_sem_aspas);
+            id_da_linha_atual = stoi(numero_sem_aspas);
+            numero_de_linhas_lido++;
         };
 
         while (getline(separador_de_linha, campo, ';')){
@@ -62,9 +64,13 @@ int CSVReader::getNumeroDeColunas(){
     return numero_de_colunas;
 }
 
-int CSVReader::getNumeroDaLinhaAtual(){
-    return numero_da_linha_atual;
+int CSVReader::getIdDaLinhaAtual(){
+    return id_da_linha_atual;
 }
 bool CSVReader::getArquivoTerminado(){
     return arquivo_terminado;
+}
+
+unsigned long long CSVReader::getNumeroDeLinhasLido(){
+    return  numero_de_linhas_lido;  
 }
