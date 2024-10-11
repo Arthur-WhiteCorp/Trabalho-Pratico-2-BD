@@ -42,10 +42,10 @@ std::vector<std::string> CSVReader::getLineCSV(){
         while (getline(separador_de_linha, campo, ';')){
             linha_atual.push_back(campo);
         }
-    
     }else{
         arquivo_terminado = true;
         my_csv.close();
+        return {};
     }
     return linha_atual;
 }
