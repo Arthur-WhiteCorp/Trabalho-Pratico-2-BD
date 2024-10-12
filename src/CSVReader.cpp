@@ -20,7 +20,7 @@ CSVReader::CSVReader(std::string file_path){
 
 }
 
-void CSVReader::setNumeroDeColunas(int num_colunas){
+void CSVReader::setNumeroDeColunas(unsigned int num_colunas){
     this->numero_de_colunas = num_colunas;
 
 }
@@ -29,25 +29,28 @@ std::vector<std::string> CSVReader::getLineCSV(){
     std::string linha, campo, nova_linha_id;
     std::regex quoted_number_regex("\"[0-9]+\"");
 
-    if (getline(my_csv,linha)){
-        std::stringstream separador_de_linha(linha);
-        std::stringstream detector_de_nova_linha(linha);
+    linha_atual.clear();
 
-        getline(detector_de_nova_linha,nova_linha_id,';');
-        if (std::regex_match(nova_linha_id,quoted_number_regex)){
-            linha_atual.clear(); // limpa a linha atual se achar uma nova linha;
-            std::string numero_sem_aspas = std::regex_replace(nova_linha_id, std::regex("\""), "");
-            id_da_linha_atual = stoi(numero_sem_aspas);
-            numero_de_linhas_lido++;
-        };
+    if (getline(my_csv,campo,';')){
 
-        while (getline(separador_de_linha, campo, ';')){
-            linha_atual.push_back(campo);
+        linha_atual.push_back(campo);
+
+        while ((linha_atual.size()) <= (numero_de_colunas - 1)){ // lê enquanto o numero de colunas for menor ou
+            if (linha_atual.size() < numero_de_colunas -1 ){
+                getline(my_csv, campo, ';');                
+                linha_atual.push_back(campo);
+            }else{
+                getline(my_csv,campo);
+                linha_atual.push_back(campo);
+            }
+
         }
+        std::string numero_sem_aspas = std::regex_replace(linha_atual[0], std::regex("\""), "");
+        id_da_linha_atual = stoi(numero_sem_aspas);                       
+        numero_de_linhas_lido++;
     }else{
         arquivo_terminado = true;
         my_csv.close();
-        return {};
     }
     return linha_atual;
 }
@@ -60,17 +63,18 @@ std::vector<std::string> CSVReader::getLinhaAtual(){
     }
 }
 
-int CSVReader::getNumeroDeColunas(){
+unsigned int CSVReader::getNumeroDeColunas(){
     return numero_de_colunas;
 }
 
 int CSVReader::getIdDaLinhaAtual(){
     return id_da_linha_atual;
 }
-bool CSVReader::getArquivoTerminado(){
-    return arquivo_terminado;
-}
 
 unsigned long long CSVReader::getNumeroDeLinhasLido(){
-    return  numero_de_linhas_lido;  
+    return numero_de_linhas_lido;
+} 
+
+bool CSVReader::getArquivoTerminado(){
+    return arquivo_terminado;
 }

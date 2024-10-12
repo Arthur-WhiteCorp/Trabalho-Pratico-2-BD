@@ -51,7 +51,7 @@ int main(int argc, char* argv[]){
     std::cout << "arquivo lido com sucesso" << std::endl;
 
     for (const auto& campo:linhas_do_csv[linhas_do_csv.size()-1]){
-        std::cout << campo << std::endl;
+        //std::cout << campo << std::endl;
 
     }
 
