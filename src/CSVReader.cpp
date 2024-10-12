@@ -22,7 +22,7 @@ CSVReader::CSVReader(std::string file_path){
 
 void CSVReader::setNumeroDeColunas(unsigned int num_colunas){
     this->numero_de_colunas = num_colunas;
-
+    linha_atual.reserve(numero_de_colunas);
 }
 
 std::vector<std::string> CSVReader::getLineCSV(){
@@ -33,15 +33,15 @@ std::vector<std::string> CSVReader::getLineCSV(){
 
     if (getline(my_csv,campo,';')){
 
-        linha_atual.push_back(campo);
+        linha_atual.emplace_back(campo);
 
         while ((linha_atual.size()) <= (numero_de_colunas - 1)){ // lê enquanto o numero de colunas for menor ou
             if (linha_atual.size() < numero_de_colunas -1 ){
                 getline(my_csv, campo, ';');                
-                linha_atual.push_back(campo);
+                linha_atual.emplace_back(campo);
             }else{
                 getline(my_csv,campo);
-                linha_atual.push_back(campo);
+                linha_atual.emplace_back(campo);
             }
 
         }

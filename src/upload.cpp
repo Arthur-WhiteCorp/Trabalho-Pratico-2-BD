@@ -3,6 +3,7 @@
 #include <vector>
 #include "OperationalSystemDescription.hpp"
 #include "CSVReader.hpp"
+#include <chrono>
 
 
 int main(int argc, char* argv[]){
@@ -11,6 +12,10 @@ int main(int argc, char* argv[]){
     infos = os_info.getDevicesInformation();
     std::vector<std::vector<std::string>> linhas_do_csv;
     std::vector<std::string> nova_linha;
+
+    auto inicio = std::chrono::system_clock::now();
+
+
 
     if (argc !=2){
         std::cout << "Número errado de argumentos, exemplo:"  << std::endl;
@@ -57,6 +62,13 @@ int main(int argc, char* argv[]){
 
     std::cout << data_base_csv.getNumeroDeLinhasLido() << std::endl;
     std::cout << data_base_csv.getIdDaLinhaAtual() << std::endl;
+
+
+    auto fim = std::chrono::system_clock::now();
+
+    auto tempo_decorrido = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
+
+    std::cout << "Time taken: " << tempo_decorrido.count() << " ms" << std::endl;
 
     return 0;
 }
