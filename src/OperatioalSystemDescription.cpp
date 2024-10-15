@@ -123,3 +123,4 @@ std::vector<Device> OperationalSystemDescription::getDevicesInformation(){
     return devices_information;
 
 }
+
