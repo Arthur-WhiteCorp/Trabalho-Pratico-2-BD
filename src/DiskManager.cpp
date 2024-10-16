@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/mman.h> // For mmap, munmap, msync
 #include <cstring>    // For memset, strcpy
-#include "OperationalSystemDescription.hpp"
+#include "OperationalSystemDescriptor.hpp"
 
 // U significa unsigned int
 #define KILO_BYTE (1024U)
@@ -20,6 +20,7 @@ DiskManager::DiskManager(const char* file_path, unsigned int espaco_de_memoria, 
     criarEspacoNaMemoria();
     setQuantidadeDeBlocos();
     setVetorAlocacao();
+    setVetorEspaco();
 }
 
 int DiskManager::criarEspacoNaMemoria(){
@@ -48,28 +49,47 @@ void DiskManager::setVetorAlocacao(){
 }
 
 void DiskManager::setVetorEspaco(){
-    vetor_espaço.assign(quantidade_de_blocos,0);
+    vetor_espaco.assign(quantidade_de_blocos,0);
 }
 
 unsigned long long DiskManager::memoryAlloc(unsigned int tamanho){
-    
+    unsigned long long endereco = procuraEndereco(tamanho);
+    if (!(endereco == quantidade_de_blocos + 1)){
+        preencheEndereco(endereco,tamanho);
+    }
+
+    return endereco;
 
 }
 
-void  DiskManager::preencheEndereço(unsigned int endereço, unsigned int tamanho){
-    for ( int i = endereço; i < (endereço + tamanho); i ++){
+void DiskManager::memoryDisalloc(unsigned long long endereco){
+    unsigned short tamanho = vetor_espaco[endereco];
+    for ( int i = endereco; i < (endereco + tamanho); i ++){
+        vetor_alocacao[i] = true;
+    }
+    vetor_espaco[endereco] = 0;
+
+}
+
+void  DiskManager::preencheEndereco(unsigned int endereco, unsigned int tamanho){
+    for ( int i = endereco; i < (endereco + tamanho); i ++){
         vetor_alocacao[i] = false;
     }
-    vetor_espaço[endereço] = tamanho;
+    vetor_espaco[endereco] = tamanho;
 }
 
 
-unsigned long int DiskManager::procuraEndereço(unsigned int tamanho){
+unsigned long long DiskManager::procuraEndereco(unsigned int tamanho){
     bool espaco_livre = true;
-    unsigned short int endereço; 
+    unsigned long long endereço; 
+    unsigned long long posicao = prox_endereco_de_procura;
 
-    
-    for (unsigned int posicao = 0; posicao < vetor_alocacao.size(); posicao++ ){
+
+    if ((posicao == vetor_espaco.size() - 1) or (posicao + tamanho >= vetor_espaco.size() - 1)){
+        posicao = 0;
+    }
+
+    for (posicao; posicao < vetor_alocacao.size(); posicao++ ){
         if (vetor_alocacao[posicao]){
             if (posicao + tamanho >= vetor_alocacao.size()){
             espaco_livre = false;
@@ -93,7 +113,7 @@ unsigned long int DiskManager::procuraEndereço(unsigned int tamanho){
     }
 
     if (espaco_livre){
-        preencheEndereço(endereço,tamanho);
+        prox_endereco_de_procura = endereço + tamanho;     
         return endereço;
     }else{
         std::cerr << "Memoria cheia libere espaço" << strerror(errno) << "\n";
@@ -101,3 +121,16 @@ unsigned long int DiskManager::procuraEndereço(unsigned int tamanho){
     }
 
 }
+
+
+const std::vector<bool>& DiskManager::getVetorAlocacao() const{
+    return vetor_alocacao;
+};
+
+const std::vector<unsigned short int>& DiskManager::getVetorEspaco() const{
+    return vetor_espaco;
+};
+
+unsigned long long DiskManager::getProxEnderecoDeProcura() const{
+    return prox_endereco_de_procura;
+};

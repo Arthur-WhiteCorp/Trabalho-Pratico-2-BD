@@ -1,4 +1,4 @@
-#include "OperationalSystemDescription.hpp"
+#include "OperationalSystemDescriptor.hpp"
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/fs.h>       
@@ -8,12 +8,12 @@
 #include <regex>
 #include <tuple>
 
-OperationalSystemDescription::OperationalSystemDescription(){
+OperationalSystemDescriptor::OperationalSystemDescriptor(){
     devices_path = "/dev/";
     setDeviceNames();
     setDevicesInformation();
 }
-void OperationalSystemDescription::setDeviceNames(){
+void OperationalSystemDescriptor::setDeviceNames(){
     const std::filesystem::path path = devices_path;
     std::regex device_regex("^(sd[a-z]\\d*|hd[a-z]\\d*|nvme\\d+n\\d+|mmcblk\\d+p?\\d*)$");
     std::vector<std::string> device_names;
@@ -34,7 +34,7 @@ void OperationalSystemDescription::setDeviceNames(){
     };
 }
 
-void OperationalSystemDescription::setDevicesInformation(){
+void OperationalSystemDescriptor::setDevicesInformation(){
     for (auto& device: devices){
         std::string device_path = "/dev/" + device.device_name;
         int fd = open(device_path.c_str(), O_RDONLY);
@@ -51,7 +51,7 @@ void OperationalSystemDescription::setDevicesInformation(){
     }
 }
 
-void  OperationalSystemDescription::setDeviceSize(int fd, Device* device){
+void  OperationalSystemDescriptor::setDeviceSize(int fd, Device* device){
     unsigned long long device_size;
 
     if (ioctl(fd, BLKGETSIZE64, &device_size) == -1) {
@@ -61,7 +61,7 @@ void  OperationalSystemDescription::setDeviceSize(int fd, Device* device){
 
 };
 
-void  OperationalSystemDescription::setSectorSize(int fd, Device* device){
+void  OperationalSystemDescriptor::setSectorSize(int fd, Device* device){
     unsigned int sector_size;
 
     if (ioctl(fd, BLKSSZGET, &sector_size) == -1) {
@@ -70,7 +70,7 @@ void  OperationalSystemDescription::setSectorSize(int fd, Device* device){
     device->sector_size = sector_size;
 
 }
-void  OperationalSystemDescription::setBlockSize(int fd, Device* device){
+void  OperationalSystemDescriptor::setBlockSize(int fd, Device* device){
     unsigned int block_size;
 
     if (ioctl(fd, BLKBSZGET, &block_size) == -1) {
@@ -79,14 +79,14 @@ void  OperationalSystemDescription::setBlockSize(int fd, Device* device){
     device->block_size = block_size;
 
 }
-void  OperationalSystemDescription::setSectorPerBlock(Device* device){
+void  OperationalSystemDescriptor::setSectorPerBlock(Device* device){
     int sectors_per_block = device->block_size / device->sector_size;
     device->sectors_per_block = sectors_per_block;
 
 }
 
 
-std::vector<std::string> OperationalSystemDescription::getDeviceNames(){
+std::vector<std::string> OperationalSystemDescriptor::getDeviceNames(){
     std::vector<std::string> device_names;
 
     for(const auto& entry: devices){
@@ -96,7 +96,7 @@ std::vector<std::string> OperationalSystemDescription::getDeviceNames(){
     return device_names;
 }
 
-std::vector<unsigned long long int> OperationalSystemDescription::getDeviceSizes(){
+std::vector<unsigned long long int> OperationalSystemDescriptor::getDeviceSizes(){
     std::vector<unsigned long long int> device_sizes;
 
     for(const auto& device: devices){
@@ -107,7 +107,7 @@ std::vector<unsigned long long int> OperationalSystemDescription::getDeviceSizes
     return device_sizes;
 }
 
-std::vector<Device> OperationalSystemDescription::getDevicesInformation(){
+std::vector<Device> OperationalSystemDescriptor::getDevicesInformation(){
     std::vector<Device> devices_information;
     for (const auto& device: devices){
         Device my_device;

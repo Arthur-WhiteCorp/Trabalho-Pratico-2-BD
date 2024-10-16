@@ -1,21 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "OperationalSystemDescription.hpp"
-#include "CSVReader.hpp"
 #include <chrono>
-
+#include "OperationalSystemDescriptor.hpp"
+#include "CSVReader.hpp"
+#include "DiskManager.hpp"
 
 int main(int argc, char* argv[]){
-    OperationalSystemDescription os_info;
+    OperationalSystemDescriptor os_info;
     std::vector<Device> infos;
     infos = os_info.getDevicesInformation();
     std::vector<std::vector<std::string>> linhas_do_csv;
     std::vector<std::string> nova_linha;
-
-    auto inicio = std::chrono::system_clock::now();
-
-
 
     if (argc !=2){
         std::cout << "Número errado de argumentos, exemplo:"  << std::endl;
@@ -44,6 +40,49 @@ int main(int argc, char* argv[]){
     std::cout << std::endl;
     std::cout << std::endl;
 
+
+    DiskManager banco_de_dados = DiskManager("./my_db.db",250,&infos[4]);
+
+    unsigned long long endereco = banco_de_dados.memoryAlloc(3);
+
+    std::cout << endereco << std::endl;
+
+
+    endereco = banco_de_dados.memoryAlloc(2);
+
+    std::cout << endereco << std::endl;
+
+
+    endereco = banco_de_dados.memoryAlloc(2);
+    banco_de_dados.memoryDisalloc(endereco);
+
+    std::cout << endereco << std::endl;
+
+    endereco = banco_de_dados.memoryAlloc(2);
+    std::cout << endereco << std::endl;
+
+
+
+    const auto& vetor_alocacao = banco_de_dados.getVetorAlocacao();
+    const auto& vetor_espaco = banco_de_dados.getVetorEspaco();
+
+    for (int i = 0; i < 100; i++){
+        std::cout << vetor_alocacao[i] << " ";
+
+    }
+
+    std::cout << std::endl;
+
+    for (int i = 0; i < 100; i++){
+        std::cout << vetor_espaco[i] << " ";        
+    }
+
+    std::cout << std::endl;
+
+    std::cout << banco_de_dados.getProxEnderecoDeProcura() << std::endl;
+
+
+    /*
     while (!data_base_csv.getArquivoTerminado()){
 
         for (const auto& campo:data_base_csv.getLineCSV()){
@@ -62,13 +101,10 @@ int main(int argc, char* argv[]){
 
     std::cout << data_base_csv.getNumeroDeLinhasLido() << std::endl;
     std::cout << data_base_csv.getIdDaLinhaAtual() << std::endl;
+    */
 
 
-    auto fim = std::chrono::system_clock::now();
 
-    auto tempo_decorrido = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
-
-    std::cout << "Time taken: " << tempo_decorrido.count() << " ms" << std::endl;
 
     return 0;
 }

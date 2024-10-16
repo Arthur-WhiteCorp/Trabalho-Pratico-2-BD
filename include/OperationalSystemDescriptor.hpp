@@ -1,5 +1,5 @@
-#ifndef OS_DESCRIPTION
-#define OS_DESCRIPTION
+#ifndef OS_DESCRIPTOR
+#define OS_DESCRIPTOR
 
 #include <iostream>
 #include <sys/ioctl.h>
@@ -15,7 +15,7 @@ struct Device{
         int sectors_per_block;
 };
 
-class OperationalSystemDescription{
+class OperationalSystemDescriptor{
     private:
     
     std::string devices_path;
@@ -30,7 +30,7 @@ class OperationalSystemDescription{
 
 
     public:
-    OperationalSystemDescription();
+    OperationalSystemDescriptor();
     std::vector<std::string> getDeviceNames();
     std::vector<unsigned long long> getDeviceSizes();
     std::vector<Device> getDevicesInformation();
