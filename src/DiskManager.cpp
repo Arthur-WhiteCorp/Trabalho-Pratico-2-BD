@@ -1,4 +1,3 @@
-#include "DiskManager.hpp"
 #include <vector>
 #include <fcntl.h> 
 #include <iostream>
@@ -7,6 +6,8 @@
 #include <sys/mman.h> // For mmap, munmap, msync
 #include <cstring>    // For memset, strcpy
 #include "OperationalSystemDescriptor.hpp"
+#include "DiskManager.hpp"
+
 
 // U significa unsigned int
 #define KILO_BYTE (1024U)
@@ -134,3 +135,43 @@ const std::vector<unsigned short int>& DiskManager::getVetorEspaco() const{
 unsigned long long DiskManager::getProxEnderecoDeProcura() const{
     return prox_endereco_de_procura;
 };
+
+
+void* DiskManager::read(unsigned long long endereco) const {
+        unsigned long long endereco_real = endereco * tamanho_do_bloco;
+
+        // Check for address overflow
+        if (endereco_real > std::numeric_limits<off_t>::max()) {
+            std::cerr << "Erro: overflow de endereço\n";
+            return nullptr;
+        }
+
+        // Map the block into memory
+        void* mapped_mem = mmap(NULL, tamanho_do_bloco, PROT_READ, MAP_SHARED, 
+                                arquivo, static_cast<off_t>(endereco_real));
+        if (mapped_mem == MAP_FAILED) {
+            std::cerr << "mmap falhou: " << strerror(errno) << std::endl;
+            return nullptr;
+        }
+
+        // Allocate memory for the copy
+        void* copy = malloc(tamanho_do_bloco);
+        if (copy == nullptr) {
+            std::cerr << "Falha ao alocar memória\n";
+            munmap(mapped_mem, tamanho_do_bloco);
+            return nullptr;
+        }
+
+        // Copy the contents of the mapped memory to the allocated buffer
+        memcpy(copy, mapped_mem, tamanho_do_bloco);
+
+        // Unmap the original block
+        if (munmap(mapped_mem, tamanho_do_bloco) == -1) {
+            std::cerr << "munmap falhou: " << strerror(errno) << std::endl;
+            free(copy);  // Free allocated memory if unmapping fails
+            return nullptr;
+        }
+
+        // Return the address of the copied data
+        return copy;
+}

@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
     std::cout << std::endl;
 
 
-    DiskManager banco_de_dados = DiskManager("./my_db.db",250,&infos[4]);
+    DiskManager banco_de_dados = DiskManager("./my_db.db",250,&infos[0]);
 
     unsigned long long endereco = banco_de_dados.memoryAlloc(3);
 
@@ -81,6 +81,16 @@ int main(int argc, char* argv[]){
 
     std::cout << banco_de_dados.getProxEnderecoDeProcura() << std::endl;
 
+    std::string string = "ffsosdff";
+
+    banco_de_dados.write(endereco,&string);
+
+    std::string* leitura = (std::string*)  banco_de_dados.read(endereco);
+
+    for (int i = 0; i < 20; i++){
+        std::cout << leitura[i];
+    }
+    std::cout <<  std::endl;
 
     /*
     while (!data_base_csv.getArquivoTerminado()){
@@ -103,7 +113,7 @@ int main(int argc, char* argv[]){
     std::cout << data_base_csv.getIdDaLinhaAtual() << std::endl;
     */
 
-
+   
 
 
     return 0;
