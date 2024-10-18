@@ -17,6 +17,11 @@ CSVReader::CSVReader(std::string file_path){
     numero_de_colunas = 0;
     numero_de_linhas_lido = 0;
     arquivo_terminado = false;
+    std::filesystem::path p{file_path};
+
+    tamanho_do_csc = std::filesystem::file_size(file_path);
+
+
 
 }
 
@@ -78,3 +83,9 @@ unsigned long long CSVReader::getNumeroDeLinhasLido(){
 bool CSVReader::getArquivoTerminado(){
     return arquivo_terminado;
 }
+
+uintmax_t CSVReader::getTamanhoDoCSV(){
+    return tamanho_do_csc;
+}
+
+

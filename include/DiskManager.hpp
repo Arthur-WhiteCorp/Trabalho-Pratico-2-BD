@@ -41,7 +41,7 @@ public:
 
 
     template <typename T>
-    void write(unsigned long long enderec, T* dados);
+    void write(unsigned long long endereco, T* dados);
     void* read(unsigned long long endereco) const;
 
 

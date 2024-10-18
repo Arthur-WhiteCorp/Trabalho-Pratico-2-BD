@@ -41,57 +41,11 @@ int main(int argc, char* argv[]){
     std::cout << std::endl;
 
 
-    DiskManager banco_de_dados = DiskManager("./my_db.db",250,&infos[0]);
+    DiskManager banco_de_dados = DiskManager("./my_db.db",1000,&infos[0]);
 
-    unsigned long long endereco = banco_de_dados.memoryAlloc(3);
+    std::cout << data_base_csv.getTamanhoDoCSV() << " bytes de arquivo" << std::endl;
 
-    std::cout << endereco << std::endl;
-
-
-    endereco = banco_de_dados.memoryAlloc(2);
-
-    std::cout << endereco << std::endl;
-
-
-    endereco = banco_de_dados.memoryAlloc(2);
-    banco_de_dados.memoryDisalloc(endereco);
-
-    std::cout << endereco << std::endl;
-
-    endereco = banco_de_dados.memoryAlloc(2);
-    std::cout << endereco << std::endl;
-
-
-
-    const auto& vetor_alocacao = banco_de_dados.getVetorAlocacao();
-    const auto& vetor_espaco = banco_de_dados.getVetorEspaco();
-
-    for (int i = 0; i < 100; i++){
-        std::cout << vetor_alocacao[i] << " ";
-
-    }
-
-    std::cout << std::endl;
-
-    for (int i = 0; i < 100; i++){
-        std::cout << vetor_espaco[i] << " ";        
-    }
-
-    std::cout << std::endl;
-
-    std::cout << banco_de_dados.getProxEnderecoDeProcura() << std::endl;
-
-    std::string string = "ffsosdff";
-
-    banco_de_dados.write(endereco,&string);
-
-    std::string* leitura = (std::string*)  banco_de_dados.read(endereco);
-
-    for (int i = 0; i < 20; i++){
-        std::cout << leitura[i];
-    }
-    std::cout <<  std::endl;
-
+    std::cout << sizeof(std::chrono::system_clock::time_point) << std::endl;
     /*
     while (!data_base_csv.getArquivoTerminado()){
 
