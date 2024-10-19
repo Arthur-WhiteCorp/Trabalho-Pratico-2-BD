@@ -5,6 +5,8 @@
 #include "OperationalSystemDescriptor.hpp"
 #include "CSVReader.hpp"
 #include "DiskManager.hpp"
+#include "BlockManager.hpp"
+#include "HashMaker.hpp"
 
 int main(int argc, char* argv[]){
     OperationalSystemDescriptor os_info;
@@ -41,11 +43,16 @@ int main(int argc, char* argv[]){
     std::cout << std::endl;
 
 
-    DiskManager banco_de_dados = DiskManager("./my_db.db",1000,&infos[0]);
+    DiskManager banco_de_dados = DiskManager("./my_db.db",2048,&infos[0]);
 
     std::cout << data_base_csv.getTamanhoDoCSV() << " bytes de arquivo" << std::endl;
 
-    std::cout << sizeof(std::chrono::system_clock::time_point) << std::endl;
+    unsigned long long  endereco = banco_de_dados.memoryAlloc(1U);
+    std::string data = "ola meu amigo";
+    banco_de_dados.write(endereco, &data);
+    std::string* read = (std::string*) banco_de_dados.read(endereco);
+    std::cout << read->data() << std::endl;
+
     /*
     while (!data_base_csv.getArquivoTerminado()){
 
@@ -67,7 +74,7 @@ int main(int argc, char* argv[]){
     std::cout << data_base_csv.getIdDaLinhaAtual() << std::endl;
     */
 
-   
+    std::cout << sizeof(BlocoDeHash) << " bytes" << std::endl;
 
 
     return 0;
