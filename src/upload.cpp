@@ -47,35 +47,49 @@ int main(int argc, char* argv[]){
 
     std::cout << data_base_csv.getTamanhoDoCSV() << " bytes de arquivo" << std::endl;
 
-    unsigned long long  endereco = banco_de_dados.memoryAlloc(1U);
-    std::string data = "ola meu amigo";
-    banco_de_dados.write(endereco, &data);
-    std::string* read = (std::string*) banco_de_dados.read(endereco);
-    std::cout << read->data() << std::endl;
 
-    /*
-    while (!data_base_csv.getArquivoTerminado()){
+    Registro registro;
+    registro.tamanho_do_registro = TAMANHO_DO_REGISTRO;
+    registro.quantidade_de_campos = 7;
 
-        for (const auto& campo:data_base_csv.getLineCSV()){
-            nova_linha.push_back(campo);
-        }
-        linhas_do_csv.push_back(nova_linha);
-        nova_linha.clear();
-    }
+    std::array<unsigned int, 7> temp = {4U, 300U, 2U, 150U, 4U, 19U, 1024U};
+    std::copy(temp.begin(), temp.end(), registro.tamanho_dos_campos.begin()); 
+
+    std::array<Registro::Tipo, 7> temp_2 = {
+        Registro::Int, 
+        Registro::Char, 
+        Registro::Int, 
+        Registro::Char, 
+        Registro::Int, 
+        Registro::Data, 
+        Registro::VarChar};
+
+    std::copy(temp_2.begin(), temp_2.end(), registro.tipos_dos_campos.begin()); 
+
+
+    BlocoDeArquivo bloco_de_arquivo;
+    bloco_de_arquivo.tipo = Arquivo;
+    bloco_de_arquivo.meta_dados = registro;
+    bloco_de_arquivo.registro_a[0] = '7';
+    bloco_de_arquivo.registro_b[0] = 'b';
+    bloco_de_arquivo.endereço_bucket_overflow = 0;
+
+    BlockManager block_manager = BlockManager(&banco_de_dados,registro);
+
+    unsigned long long endereco = banco_de_dados.memoryAlloc(1U);
+
     
-    std::cout << "arquivo lido com sucesso" << std::endl;
+    block_manager.EscreverBloco(&bloco_de_arquivo,endereco);
+    
+    BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(endereco));
+    std::cout << bloco_lido->tipo << std::endl;
+    std::cout << bloco_lido->registro_b[0] << std::endl;
+    std::cout << block_manager.getTipoDeBloco(endereco) << std::endl;
 
-    for (const auto& campo:linhas_do_csv[linhas_do_csv.size()-1]){
-        //std::cout << campo << std::endl;
 
-    }
+    unsigned char* campo = block_manager.LerCampo(bloco_lido,'a',1U);
 
-    std::cout << data_base_csv.getNumeroDeLinhasLido() << std::endl;
-    std::cout << data_base_csv.getIdDaLinhaAtual() << std::endl;
-    */
-
-    std::cout << sizeof(BlocoDeHash) << " bytes" << std::endl;
-
+    std::cout << campo[0] << std::endl;
 
     return 0;
 }

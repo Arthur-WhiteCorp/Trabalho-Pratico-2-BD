@@ -7,17 +7,17 @@
 
 
 //Nenhum dos a segur define esses tamanhos, são somente marcações
-#define TAMANHO_DO_REGISTRO 1503UL // o registro tem 1503 bytes
+#define TAMANHO_DO_REGISTRO 1505UL // o registro tem 1505 bytes
 #define TAMANHO_DO_BLOCO_DE_ARQUIVO 3112UL // em bytes
 #define TAMANHO_DO_BLOCO_DE_HASH 4088UL // em bytes
 #define TAMANHO_DO_BLOCO_DE_INDICE  // em bytes
 #define TAMANHO_DO_BLOCO_DE_INDICE_SECUNDARIO // em bytes
 
-enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario};
+enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Erro};
 
 #pragma pack(push, 1) 
 struct Registro{ // 88 bytes
-    enum Tipo {Int, VarChar, Data}; // INT = unsigned int; VARCHAR = char[n]; DATA = char[19] 
+    enum Tipo {Int, Char, VarChar, Data}; // INT = unsigned int; VARCHAR = char[n]; DATA = char[19] 
     unsigned int tamanho_do_registro = 0; // tamanho total em bytes do registro
     unsigned int quantidade_de_campos = 0; // máximo 10 campos
     std::array<unsigned int,10> tamanho_dos_campos{}; // inicia tudo com 0, é ordenado
@@ -27,8 +27,8 @@ struct Registro{ // 88 bytes
 struct BlocoDeArquivo{ // 3112 bytes
     TipoDeBloco tipo = Arquivo;
     Registro meta_dados;
-    char registro_a[1503];
-    char registro_b[1503];
+    unsigned char registro_a[TAMANHO_DO_REGISTRO];
+    unsigned char registro_b[TAMANHO_DO_REGISTRO];
     unsigned long long endereço_bucket_overflow; // endereço lógico do bucket de overflow
 
 };
@@ -51,20 +51,22 @@ struct BlocoDeIndiceSecundario{
 class BlockManager{
 private:
     Registro tipo_de_registro; // cada bloco de Arquivo recebe  somente um tipo de registro
-
+    DiskManager* banco_de_dados;
 
 public:
-    BlockManager(Registro registro);
-    BlockManager();
+    BlockManager(DiskManager* banco_de_dados,  Registro registro);
+    BlockManager(DiskManager* banco_de_dados);
 
-    BlocoDeArquivo* LerBloco(unsigned long long endereco);
-    void EscreverBloco(BlocoDeArquivo bloco, unsigned long long endereco, TipoDeBloco tipo);
+    void setTipoDeRegistro(Registro registro);
 
-    void* LerCampo(BlocoDeArquivo bloco, unsigned short int campo);
-    void EscreverCampo(BlocoDeArquivo bloco,unsigned short int campo);
+    TipoDeBloco getTipoDeBloco(unsigned long long endereco);
+
+    void* LerBloco(unsigned long long endereco);
+    void EscreverBloco(void* bloco, unsigned long long endereco);
 
 
-
+    unsigned char* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
+    void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo);
 };
 
 #endif

@@ -18,13 +18,6 @@ public:
     ~HaskMaker();
 };
 
-HaskMaker::HaskMaker(/* args */)
-{
-}
-
-HaskMaker::~HaskMaker()
-{
-}
 
 
 #endif
