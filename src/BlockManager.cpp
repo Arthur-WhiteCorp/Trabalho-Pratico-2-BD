@@ -71,7 +71,7 @@ void BlockManager::EscreverBloco(void* bloco, unsigned long long endereco){
     }   
 }
 
-unsigned char* BlockManager::LerCampo(BlocoDeArquivo* bloco, char registro ,unsigned short int campo){
+void* BlockManager::LerCampo(BlocoDeArquivo* bloco, char registro ,unsigned short int campo){
     unsigned long offset_de_registro = 0;
     unsigned long offset_de_campo = 0;
     unsigned long delimitador_de_campo = 0;
@@ -101,9 +101,44 @@ unsigned char* BlockManager::LerCampo(BlocoDeArquivo* bloco, char registro ,unsi
                         bloco->meta_dados.tamanho_dos_campos[campo - 1] +
                         offset_de_registro;
     size_t campo_size = bloco->meta_dados.tamanho_dos_campos[campo - 1];
+
     
     unsigned char* campo_data = (unsigned char*) malloc(sizeof(unsigned char) * campo_size);
     memcpy(campo_data, byte_data + offset_de_campo + offset_de_registro, campo_size);
     
     return campo_data;
+}
+
+void BlockManager::EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo, const void* data){
+    unsigned long offset_de_registro = 0;
+    unsigned long offset_de_campo = 0;
+    unsigned long delimitador_de_campo = 0;
+
+    switch (registro){
+    case 'a':
+        offset_de_registro = 92UL; // 92 bytes 4 do tipo + 88 dos metadados 
+        break;
+    case 'b':
+        offset_de_registro = 92UL + TAMANHO_DO_REGISTRO; // pula o primeiro registro
+        break;
+    default:
+        std::cerr << "Erro: registro inválido" << std::endl;
+        break;
+    }
+
+    unsigned char* byte_data = reinterpret_cast<unsigned char*>(bloco);
+
+    for (int i = 0; i < campo - 1; i++){
+        offset_de_campo += bloco->meta_dados.tamanho_dos_campos[i];
+    }
+
+    delimitador_de_campo = offset_de_campo + 
+                        bloco->meta_dados.tamanho_dos_campos[campo - 1] +
+                        offset_de_registro;
+    size_t campo_size = bloco->meta_dados.tamanho_dos_campos[campo - 1];
+
+
+    memcpy(byte_data+offset_de_campo+offset_de_registro,data,campo_size);
+
+
 }

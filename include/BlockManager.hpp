@@ -27,8 +27,8 @@ struct Registro{ // 88 bytes
 struct BlocoDeArquivo{ // 3112 bytes
     TipoDeBloco tipo = Arquivo;
     Registro meta_dados;
-    unsigned char registro_a[TAMANHO_DO_REGISTRO];
-    unsigned char registro_b[TAMANHO_DO_REGISTRO];
+    std::array<unsigned char,TAMANHO_DO_REGISTRO> registro_a{};
+    std::array<unsigned char,TAMANHO_DO_REGISTRO> registro_b{};
     unsigned long long endereço_bucket_overflow; // endereço lógico do bucket de overflow
 
 };
@@ -65,8 +65,8 @@ public:
     void EscreverBloco(void* bloco, unsigned long long endereco);
 
 
-    unsigned char* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
-    void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo);
+    void* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
+    void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo, const void* data);
 };
 
 #endif

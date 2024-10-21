@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
     BlocoDeArquivo bloco_de_arquivo;
     bloco_de_arquivo.tipo = Arquivo;
     bloco_de_arquivo.meta_dados = registro;
-    bloco_de_arquivo.registro_a[0] = '7';
+    bloco_de_arquivo.registro_a[0] = 'a';
     bloco_de_arquivo.registro_b[0] = 'b';
     bloco_de_arquivo.endereço_bucket_overflow = 0;
 
@@ -84,12 +84,18 @@ int main(int argc, char* argv[]){
     BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(endereco));
     std::cout << bloco_lido->tipo << std::endl;
     std::cout << bloco_lido->registro_b[0] << std::endl;
-    std::cout << block_manager.getTipoDeBloco(endereco) << std::endl;
+
+    std::cout << "--------testes---------" << std::endl;    
+    
+    int a = 8796544;
+
+    block_manager.EscreverCampo(bloco_lido,'a',1u,&a);
+    std::string texto = "a vida é bela";
+    block_manager.EscreverCampo(bloco_lido,'a',2u,texto.c_str());
 
 
-    unsigned char* campo = block_manager.LerCampo(bloco_lido,'a',1U);
+    int* recebido =  static_cast<int*> (block_manager.LerCampo(bloco_lido,'a',1u));
 
-    std::cout << campo[0] << std::endl;
-
+    std::cout << *recebido << std::endl;
     return 0;
 }
