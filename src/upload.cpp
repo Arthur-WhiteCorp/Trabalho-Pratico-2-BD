@@ -88,16 +88,19 @@ int main(int argc, char* argv[]){
     std::cout << "--------testes---------" << std::endl;    
     
     int a = 8796544;
-
     block_manager.EscreverCampo(bloco_lido,'a',1u,&a);
     std::string texto = "a vida é bela fhsiofhisfdhiosfdh";
     block_manager.EscreverCampo(bloco_lido,'a',2u,texto.c_str());
-
+    unsigned short int ano_de_piblicacao = 2184u;
+    block_manager.EscreverCampo(bloco_lido,'a',3u,&ano_de_piblicacao);
 
     int* recebido =  static_cast<int*> (block_manager.LerCampo(bloco_lido,'a',1u));
     char* texto_recebido = static_cast<char*>(block_manager.LerCampo(bloco_lido,'a',2U));
+    unsigned short int* ano_recebido = static_cast<unsigned short int*>(block_manager.LerCampo(bloco_lido,'a',3U));
+
 
     std::cout << *recebido << std::endl;
     std::cout << texto_recebido << std::endl;
+    std::cout << *ano_recebido << std::endl;
     return 0;
 }
