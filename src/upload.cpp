@@ -90,12 +90,14 @@ int main(int argc, char* argv[]){
     int a = 8796544;
 
     block_manager.EscreverCampo(bloco_lido,'a',1u,&a);
-    std::string texto = "a vida é bela";
+    std::string texto = "a vida é bela fhsiofhisfdhiosfdh";
     block_manager.EscreverCampo(bloco_lido,'a',2u,texto.c_str());
 
 
     int* recebido =  static_cast<int*> (block_manager.LerCampo(bloco_lido,'a',1u));
+    char* texto_recebido = static_cast<char*>(block_manager.LerCampo(bloco_lido,'a',2U));
 
     std::cout << *recebido << std::endl;
+    std::cout << texto_recebido << std::endl;
     return 0;
 }
