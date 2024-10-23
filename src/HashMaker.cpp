@@ -12,5 +12,6 @@ void HashMaker::setQuantidadeDeBlocosDeArquivo(uintmax_t tamanho_do_arquivo){
 
 void HashMaker::setTamanhoDoHash(){
     hash = new endereco[quantidade_de_blocos_de_arquivo];
-    std::cout << " este é o tamanho do hash" << std::endl;
+    unsigned long long memoria = sizeof(endereco) * quantidade_de_blocos_de_arquivo;
+    std::cout << "este é o tamanho do hash:" <<  memoria  << std::endl;
 }
