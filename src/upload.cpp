@@ -102,5 +102,22 @@ int main(int argc, char* argv[]){
     std::cout << *recebido << std::endl;
     std::cout << texto_recebido << std::endl;
     std::cout << *ano_recebido << std::endl;
+
+    std::cout << "-------testes com o hash maker------" << std::endl;
+
+    HashMaker arquivo_hash = HashMaker(data_base_csv.getTamanhoDoCSV());
+
+    std::cout << sizeof(unsigned long long) << std::endl;
+
+    std::cout << sizeof(BlocoDeHash) << std::endl;
+
+    std::cout << sizeof(unsigned int) << std::endl;
+
+
+    std::array<bool,2> bolas{true};
+
+    std::cout << sizeof(bolas) << std::endl;
+
+
     return 0;
 }

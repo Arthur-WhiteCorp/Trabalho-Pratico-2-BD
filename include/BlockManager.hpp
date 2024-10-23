@@ -3,21 +3,26 @@
 
 #include <array>
 #include "DiskManager.hpp"
-#include "HashMaker.hpp"
 
 
-//Nenhum dos a segur define esses tamanhos, são somente marcações
+//Nenhum dos a seguir define esses tamanhos, são somente marcações
 #define TAMANHO_DO_REGISTRO 1505UL // o registro tem 1505 bytes
 #define TAMANHO_DO_BLOCO_DE_ARQUIVO 3112UL // em bytes
-#define TAMANHO_DO_BLOCO_DE_HASH 4088UL // em bytes
+#define REGISTROS_POR_BLOCO 2U // 2 registros por bloco
+#define TAMANHO_DO_BLOCO_DE_HASH 4092UL // em bytes
+#define ITEMS_DE_HASH_POR_BLOCO 511UL // 511 items de hash por bloco
 #define TAMANHO_DO_BLOCO_DE_INDICE  // em bytes
 #define TAMANHO_DO_BLOCO_DE_INDICE_SECUNDARIO // em bytes
 
-enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Erro};
+
+enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Erro}; // o tipo é 4 bytes
+
+struct ItemDoHash;
+
 
 #pragma pack(push, 1) 
 struct Registro{ // 88 bytes
-    enum Tipo {Int, Char, VarChar, Data}; // INT = unsigned int; VARCHAR = char[n]; DATA = char[19] 
+    enum Tipo {Int, Char, VarChar, Data}; // INT = unsigned int; VARCHAR = char[n]; DATA = char[19] // 4 bytes
     unsigned int tamanho_do_registro = 0; // tamanho total em bytes do registro
     unsigned int quantidade_de_campos = 0; // máximo 10 campos
     std::array<unsigned int,10> tamanho_dos_campos{}; // inicia tudo com 0, é ordenado
@@ -33,9 +38,9 @@ struct BlocoDeArquivo{ // 3112 bytes
 
 };
 
-struct BlocoDeHash{ // 4088 bytes
-    TipoDeBloco tipo = Hash; // tipo de bloco, 8 bytes
-    std::array<ItemDoHash,255> items_do_hash; // items do hash, 4080 bytes
+struct BlocoDeHash{ // 4092 bytes
+    TipoDeBloco tipo = Hash; // tipo de bloco, 4 bytes
+    std::array<unsigned long long,ITEMS_DE_HASH_POR_BLOCO> items_do_hash; // items do hash, 4080 bytes
 
 };
 

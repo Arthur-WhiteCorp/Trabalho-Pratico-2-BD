@@ -1,21 +1,25 @@
 #ifndef HASH_MAKER
 #define HASH_MAKER
 
+#include <vector>
+#include "BlockManager.hpp"
 
-struct ItemDoHash{
-    unsigned int id; // chave do hash
-    unsigned long long endereco; // endereco logico
-};
-
+using endereco = unsigned long long;
 
 
-
-class HaskMaker{
+class HashMaker{
 private:
-    /* data */
+    unsigned long quantidade_de_blocos_de_hash;
+    unsigned long quantidade_de_blocos_de_arquivo;
+    endereco* hash;
+
+    unsigned long long fazHashing(unsigned int id);
+    void setQuantidadeDeBlocosDeArquivo(uintmax_t tamanho_do_arquivo);
+    void setTamanhoDoHash();
 public:
-    HaskMaker(/* args */);
-    ~HaskMaker();
+    HashMaker(uintmax_t tamanho_do_arquivo); // em bytes
+    int inserirNoHash(); // insere no hash
+    void* buscarNoHash(unsigned int id); // busca no hash
 };
 
 
