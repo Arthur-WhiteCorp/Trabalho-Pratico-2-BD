@@ -28,7 +28,8 @@ public:
     bool getArquivoTerminado();
     void setNumeroDeColunas(unsigned int num_de_colunas);
     uintmax_t getTamanhoDoCSV();
-
+    void resetarLocalizacaoDoarquivo();// vai ser usado para voltar ao inicio do arquivo
+    void fecharArquivo(); 
 };
 
 

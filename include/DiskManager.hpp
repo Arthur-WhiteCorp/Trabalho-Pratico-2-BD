@@ -8,6 +8,7 @@
 #include <cstring>
 #include "OperationalSystemDescriptor.hpp"
 
+using Endereco = unsigned long long;
 
 class DiskManager{
 private:
@@ -16,8 +17,8 @@ private:
     int arquivo;// file descriptor de baxio nível deferente do file stream
     unsigned int espaco_de_memoria; // em megabytes
     unsigned int tamanho_do_bloco; // em bytes
-    unsigned int quantidade_de_blocos;
-    unsigned long long prox_endereco_de_procura = 0; // endereco onde a procura de espaco vai começar
+    unsigned long long quantidade_de_blocos;
+    Endereco prox_endereco_de_procura = 0; // endereco onde a procura de espaco vai começar
     std::vector <bool> vetor_alocacao; // vetor de alocação dos blocos (true livre) (false alocado)
     std::vector <unsigned short int> vetor_espaco; // vetor de espaços de endereço de memoria
 
@@ -25,9 +26,8 @@ private:
     void setVetorAlocacao();
     void setVetorEspaco();
     void setQuantidadeDeBlocos();
-
-    void preencheEndereco(unsigned int endereço, unsigned int tamanho);
-    unsigned long long procuraEndereco(unsigned int tamanho); // de "tamanho" blocos
+    void preencheEndereco(Endereco endereco, unsigned int tamanho);
+    Endereco procuraEndereco(unsigned int tamanho); // de "tamanho" blocos
 
 
 public:
@@ -35,21 +35,23 @@ public:
     DiskManager(const char* file_path, unsigned int espaco_de_memoria, Device* dispositivo_de_memoria);
     const std::vector<bool>& getVetorAlocacao() const;
     const std::vector<unsigned short int>& getVetorEspaco() const;
-    unsigned long long getProxEnderecoDeProcura() const;
-    unsigned long long memoryAlloc(unsigned int tamanho);
-    void memoryDisalloc(unsigned long long endereco);
+    Endereco getProxEnderecoDeProcura() const;
+    Endereco memoryAlloc(unsigned int tamanho);
+    void memoryDisalloc(Endereco endereco);
 
+    unsigned long long getQuantidadeDeBlocos() const;
+    unsigned int getTamanhoDoBloco() const;
 
     template <typename T>
-    void write(unsigned long long endereco, T* dados);
-    void* read(unsigned long long endereco) const;
+    void write(Endereco endereco, T* dados);
+    void* read(Endereco endereco) const;
 
 
 };
 
 template <typename T>
 
-void DiskManager::write(unsigned long long endereco, T* dados){
+void DiskManager::write(Endereco endereco, T* dados){
     if (vetor_alocacao[endereco]){
         std::cerr << "Erro: endereço não alocado\n";
         std::cout << vetor_alocacao[endereco] << std::endl;
@@ -57,7 +59,7 @@ void DiskManager::write(unsigned long long endereco, T* dados){
     }
 
 
-    unsigned long long endereco_real = endereco * tamanho_do_bloco;
+    Endereco endereco_real = endereco * tamanho_do_bloco;
     if (endereco_real > std::numeric_limits<off_t>::max()) {
         std::cerr << "Erro: overflow de endereço\n";
         return;

@@ -42,7 +42,7 @@ int DiskManager::criarEspacoNaMemoria(){
 }
 
 void DiskManager::setQuantidadeDeBlocos(){
-    quantidade_de_blocos = (espaco_de_memoria * MEGA_BYTE)/tamanho_do_bloco;
+    quantidade_de_blocos = ((espaco_de_memoria * MEGA_BYTE)/tamanho_do_bloco) + 1;
 }
 
 void DiskManager::setVetorAlocacao(){
@@ -53,8 +53,8 @@ void DiskManager::setVetorEspaco(){
     vetor_espaco.assign(quantidade_de_blocos,0);
 }
 
-unsigned long long DiskManager::memoryAlloc(unsigned int tamanho){
-    unsigned long long endereco = procuraEndereco(tamanho);
+Endereco DiskManager::memoryAlloc(unsigned int tamanho){
+    Endereco endereco = procuraEndereco(tamanho);
     if (!(endereco == quantidade_de_blocos + 1)){
         preencheEndereco(endereco,tamanho);
     }
@@ -63,7 +63,7 @@ unsigned long long DiskManager::memoryAlloc(unsigned int tamanho){
 
 }
 
-void DiskManager::memoryDisalloc(unsigned long long endereco){
+void DiskManager::memoryDisalloc(Endereco endereco){
     unsigned short tamanho = vetor_espaco[endereco];
     for ( int i = endereco; i < (endereco + tamanho); i ++){
         vetor_alocacao[i] = true;
@@ -72,7 +72,7 @@ void DiskManager::memoryDisalloc(unsigned long long endereco){
 
 }
 
-void  DiskManager::preencheEndereco(unsigned int endereco, unsigned int tamanho){
+void  DiskManager::preencheEndereco(Endereco endereco, unsigned int tamanho){
     for ( int i = endereco; i < (endereco + tamanho); i ++){
         vetor_alocacao[i] = false;
     }
@@ -80,10 +80,10 @@ void  DiskManager::preencheEndereco(unsigned int endereco, unsigned int tamanho)
 }
 
 
-unsigned long long DiskManager::procuraEndereco(unsigned int tamanho){
+Endereco DiskManager::procuraEndereco(unsigned int tamanho){
     bool espaco_livre = true;
-    unsigned long long endereço; 
-    unsigned long long posicao = prox_endereco_de_procura;
+    Endereco endereço; 
+    Endereco posicao = prox_endereco_de_procura;
 
 
     if ((posicao == vetor_espaco.size() - 1) or (posicao + tamanho >= vetor_espaco.size() - 1)){
@@ -132,13 +132,13 @@ const std::vector<unsigned short int>& DiskManager::getVetorEspaco() const{
     return vetor_espaco;
 };
 
-unsigned long long DiskManager::getProxEnderecoDeProcura() const{
+Endereco DiskManager::getProxEnderecoDeProcura() const{
     return prox_endereco_de_procura;
 };
 
 
-void* DiskManager::read(unsigned long long endereco) const {
-        unsigned long long endereco_real = endereco * tamanho_do_bloco;
+void* DiskManager::read(Endereco endereco) const {
+        Endereco endereco_real = endereco * tamanho_do_bloco;
 
         // Check for address overflow
         if (endereco_real > std::numeric_limits<off_t>::max()) {
@@ -174,4 +174,12 @@ void* DiskManager::read(unsigned long long endereco) const {
 
         // Return the address of the copied data
         return copy;
+}
+
+unsigned long long DiskManager::getQuantidadeDeBlocos() const{
+    return quantidade_de_blocos;
+}
+
+unsigned int DiskManager::getTamanhoDoBloco() const{    
+    return tamanho_do_bloco;
 }

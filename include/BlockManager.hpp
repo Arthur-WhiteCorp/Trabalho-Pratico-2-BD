@@ -7,7 +7,7 @@
 
 //Nenhum dos a seguir define esses tamanhos, são somente marcações
 #define TAMANHO_DO_REGISTRO 1505UL // o registro tem 1505 bytes
-#define TAMANHO_DO_BLOCO_DE_ARQUIVO 3112UL // em bytes
+#define TAMANHO_DO_BLOCO_DE_ARQUIVO 3114UL // em bytes
 #define REGISTROS_POR_BLOCO 2U // 2 registros por bloco
 #define TAMANHO_DO_BLOCO_DE_HASH 4092UL // em bytes
 #define ITEMS_DE_HASH_POR_BLOCO 511UL // 511 items de hash por bloco
@@ -29,18 +29,19 @@ struct Registro{ // 88 bytes
     std::array<Tipo,10> tipos_dos_campos{}; // vetor ordenado de tipos de campo, inciado com tudo 0
 };
 
-struct BlocoDeArquivo{ // 3112 bytes
+struct BlocoDeArquivo{ // 3114 bytes
     TipoDeBloco tipo = Arquivo;
     Registro meta_dados;
+    std::array<bool,REGISTROS_POR_BLOCO> livre{true,true};
     std::array<unsigned char,TAMANHO_DO_REGISTRO> registro_a{};
     std::array<unsigned char,TAMANHO_DO_REGISTRO> registro_b{};
-    unsigned long long endereço_bucket_overflow; // endereço lógico do bucket de overflow
+    Endereco endereço_bucket_overflow; // endereço lógico do bucket de overflow
 
 };
 
 struct BlocoDeHash{ // 4092 bytes
     TipoDeBloco tipo = Hash; // tipo de bloco, 4 bytes
-    std::array<unsigned long long,ITEMS_DE_HASH_POR_BLOCO> items_do_hash; // items do hash, 4080 bytes
+    std::array<Endereco,ITEMS_DE_HASH_POR_BLOCO> items_do_hash; // items do hash, 4080 bytes
 
 };
 
@@ -64,10 +65,10 @@ public:
 
     void setTipoDeRegistro(Registro registro);
 
-    TipoDeBloco getTipoDeBloco(unsigned long long endereco);
+    TipoDeBloco getTipoDeBloco(Endereco endereco);
 
-    void* LerBloco(unsigned long long endereco);
-    void EscreverBloco(void* bloco, unsigned long long endereco);
+    void* LerBloco(Endereco endereco);
+    void EscreverBloco(void* bloco, Endereco endereco);
 
 
     void* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b

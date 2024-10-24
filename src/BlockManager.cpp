@@ -22,7 +22,7 @@ void BlockManager::setTipoDeRegistro(Registro registro){
     tipo_de_registro.tipos_dos_campos = registro.tipos_dos_campos;
 }
 
-TipoDeBloco BlockManager::getTipoDeBloco(unsigned long long endereco){
+TipoDeBloco BlockManager::getTipoDeBloco(Endereco endereco){
     void* data = banco_de_dados->read(endereco);
     unsigned char* byte_data = static_cast<unsigned char*>(data);
     TipoDeBloco tipo_de_bloco = static_cast<TipoDeBloco>(*byte_data);
@@ -35,13 +35,13 @@ TipoDeBloco BlockManager::getTipoDeBloco(unsigned long long endereco){
 
 }
 
-void* BlockManager::LerBloco(unsigned long long endereco) {
+void* BlockManager::LerBloco(Endereco endereco) {
     void* data = banco_de_dados->read(endereco);
     return data;
 }
 
 
-void BlockManager::EscreverBloco(void* bloco, unsigned long long endereco){
+void BlockManager::EscreverBloco(void* bloco, Endereco endereco){
 
     unsigned char* byte_data = static_cast<unsigned char*>(bloco);
     TipoDeBloco tipo_de_bloco = static_cast<TipoDeBloco>(*byte_data);
@@ -78,10 +78,10 @@ void* BlockManager::LerCampo(BlocoDeArquivo* bloco, char registro ,unsigned shor
 
     switch (registro){
     case 'a':
-        offset_de_registro = 92UL; // 92 bytes 4 do tipo + 88 dos metadados 
+        offset_de_registro = 94UL; // 92 bytes 4 do tipo + 2 do vetor livre+ 88 dos metadados 
         break;
     case 'b':
-        offset_de_registro = 92UL + TAMANHO_DO_REGISTRO; // pula o primeiro registro
+        offset_de_registro = 94UL + TAMANHO_DO_REGISTRO; // pula o primeiro registro
         break;
     default:
         return nullptr;
@@ -116,10 +116,10 @@ void BlockManager::EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned sh
 
     switch (registro){
     case 'a':
-        offset_de_registro = 92UL; // 92 bytes 4 do tipo + 88 dos metadados 
+        offset_de_registro = 94UL; // 92 bytes 4 do tipo + 2 do vetor livre+ 88 dos metadados 
         break;
     case 'b':
-        offset_de_registro = 92UL + TAMANHO_DO_REGISTRO; // pula o primeiro registro
+        offset_de_registro = 94UL + TAMANHO_DO_REGISTRO; // pula o primeiro registro
         break;
     default:
         std::cerr << "Erro: registro inválido" << std::endl;

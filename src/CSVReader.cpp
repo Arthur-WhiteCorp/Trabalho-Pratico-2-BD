@@ -55,7 +55,6 @@ std::vector<std::string> CSVReader::getLineCSV(){
         numero_de_linhas_lido++;
     }else{
         arquivo_terminado = true;
-        my_csv.close();
     }
     return linha_atual;
 }
@@ -88,4 +87,25 @@ uintmax_t CSVReader::getTamanhoDoCSV(){
     return tamanho_do_csc;
 }
 
+
+void CSVReader::resetarLocalizacaoDoarquivo(){
+    if (my_csv.is_open()) {
+        my_csv.clear(); // clear error flags
+        my_csv.seekg(0, std::ios::beg); // move to beginning of file
+        if (!my_csv) {
+            std::cerr << "Error: unable to reset file position" << std::endl;
+        }
+    } else {
+        std::cerr << "Error: file is not open" << std::endl;
+    }
+    id_da_linha_atual = 0;
+    numero_de_linhas_lido = 0;
+    arquivo_terminado = false;
+    linha_atual.clear();
+    linha_atual.shrink_to_fit();
+}
+
+void CSVReader::fecharArquivo(){
+    my_csv.close();
+}
 

@@ -6,7 +6,7 @@
 #include "CSVReader.hpp"
 #include "DiskManager.hpp"
 #include "BlockManager.hpp"
-#include "HashMaker.hpp"
+#include "HashManager.hpp"
 
 int main(int argc, char* argv[]){
     OperationalSystemDescriptor os_info;
@@ -25,28 +25,23 @@ int main(int argc, char* argv[]){
     data_base_csv.setNumeroDeColunas(7);
 
     for (const auto& info:infos){
-        std::string name = info.device_name;
-        unsigned long long device_size =  info.device_size;
-        unsigned long sector_size = info.sector_size;
-        unsigned long block_size = info.block_size;
-        int sectors_per_block = info.sectors_per_block;
 
-        std::cout << "Device Name: " << name << std::endl;
-        std::cout << "Device Size: " << device_size << " bytes" << std::endl;
-        std::cout << "Sector Size: " << sector_size << " bytes" << std::endl;
-        std::cout << "Block Size: " << block_size << " bytes" << std::endl;
-        std::cout << "Sectors per Block: " << sectors_per_block << std::endl;
+        std::cout << "Device Name: " << info.device_name << std::endl;
+        std::cout << "Device Size: " << info.device_size << " bytes" << std::endl;
+        std::cout << "Sector Size: " << info.sector_size << " bytes" << std::endl;
+        std::cout << "Block Size: " << info.block_size << " bytes" << std::endl;
+        std::cout << "Sectors per Block: " << info.sectors_per_block << std::endl;
         std::cout << "-----------------------" << std::endl; 
     }
 
-    std::cout << std::endl;
-    std::cout << std::endl;
+    
 
 
     DiskManager banco_de_dados = DiskManager("./my_db.db",2048,&infos[0]);
 
     std::cout << data_base_csv.getTamanhoDoCSV() << " bytes de arquivo" << std::endl;
 
+    std::cout << "--------testes---------" << std::endl;    
 
     Registro registro;
     registro.tamanho_do_registro = TAMANHO_DO_REGISTRO;
@@ -82,10 +77,7 @@ int main(int argc, char* argv[]){
     block_manager.EscreverBloco(&bloco_de_arquivo,endereco);
     
     BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(endereco));
-    std::cout << bloco_lido->tipo << std::endl;
-    std::cout << bloco_lido->registro_b[0] << std::endl;
 
-    std::cout << "--------testes---------" << std::endl;    
     
     int a = 8796544;
     block_manager.EscreverCampo(bloco_lido,'a',1u,&a);
@@ -105,19 +97,15 @@ int main(int argc, char* argv[]){
 
     std::cout << "-------testes com o hash maker------" << std::endl;
 
-    HashMaker arquivo_hash = HashMaker(data_base_csv.getTamanhoDoCSV());
+    while (!(data_base_csv.getLineCSV().empty())){
+        
+    }
 
-    std::cout << sizeof(unsigned long long) << std::endl;
+    unsigned long long quantidade_de_linhas = data_base_csv.getNumeroDeLinhasLido(); 
+    std::cout << "quantidade de linhas lidas: " << quantidade_de_linhas << std::endl;
+    data_base_csv.resetarLocalizacaoDoarquivo();
 
-    std::cout << sizeof(BlocoDeHash) << std::endl;
-
-    std::cout << sizeof(unsigned int) << std::endl;
-
-
-    std::array<bool,2> bolas{true};
-
-    std::cout << sizeof(bolas) << std::endl;
-
+    HashManager arquivo_hash = HashManager(quantidade_de_linhas,&banco_de_dados,&block_manager);
 
     return 0;
 }
