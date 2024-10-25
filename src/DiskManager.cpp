@@ -117,7 +117,7 @@ Endereco DiskManager::procuraEndereco(unsigned int tamanho){
         prox_endereco_de_procura = endereço + tamanho;     
         return endereço;
     }else{
-        std::cerr << "Memoria cheia libere espaço" << strerror(errno) << "\n";
+        std::cerr << "Memoria cheia libere espaço" << std::endl;
         return quantidade_de_blocos + 1;
     }
 

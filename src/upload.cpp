@@ -37,7 +37,7 @@ int main(int argc, char* argv[]){
     
 
 
-    DiskManager banco_de_dados = DiskManager("./my_db.db",2048,&infos[0]);
+    DiskManager banco_de_dados = DiskManager("./my_db.db",4000u,&infos[0]);
 
     std::cout << data_base_csv.getTamanhoDoCSV() << " bytes de arquivo" << std::endl;
 
@@ -106,6 +106,20 @@ int main(int argc, char* argv[]){
     data_base_csv.resetarLocalizacaoDoarquivo();
 
     HashManager arquivo_hash = HashManager(quantidade_de_linhas,&banco_de_dados,&block_manager);
+
+    arquivo_hash.inserirNoHash(1, bloco_lido);
+
+    
+    BlocoDeArquivo* bloco_buscado_no_hash =  static_cast<BlocoDeArquivo*>(arquivo_hash.buscarNoHash(1));
+
+    int* recebido_hash =  static_cast<int*> (block_manager.LerCampo(bloco_buscado_no_hash,'a',1u));
+    char* texto_recebido_hash = static_cast<char*>(block_manager.LerCampo(bloco_buscado_no_hash,'a',2U));
+    unsigned short int* ano_recebido_hash = static_cast<unsigned short int*>(block_manager.LerCampo(bloco_buscado_no_hash,'a',3U));
+
+
+    std::cout << *recebido_hash << std::endl;
+    std::cout << texto_recebido_hash << std::endl;
+    std::cout << *ano_recebido_hash << std::endl;
 
     return 0;
 }
