@@ -15,7 +15,7 @@
 #define TAMANHO_DO_BLOCO_DE_INDICE_SECUNDARIO // em bytes
 
 
-enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Erro}; // o tipo é 4 bytes
+enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Erro, Catalogo}; // o tipo é 4 bytes
 
 struct ItemDoHash;
 
@@ -36,6 +36,14 @@ struct BlocoDeArquivo{ // 3114 bytes
     std::array<unsigned char,TAMANHO_DO_REGISTRO> registro_a{};
     std::array<unsigned char,TAMANHO_DO_REGISTRO> registro_b{};
     Endereco endereço_bucket_overflow; // endereço lógico do bucket de overflow
+
+};
+
+struct BlocoDeCatalogo{ // 3114 bytes
+    TipoDeBloco tipo = Catalogo;
+    Endereco endereco_do_arquivo_de_hash;
+    Endereco endereco_da_arvore_b_plus_primaria;
+    Endereco endereco_da_arvore_b_plus_secundaria;
 
 };
 
