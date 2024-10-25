@@ -8,9 +8,12 @@
 #define ALFA 654656465U
 #define BETA 1054628546U
 
+
+using Linha = std::tuple<unsigned int, std::string, unsigned short int, std::string, unsigned int , std::string,
+                         std::string>;
 class HashManager{
 private:
-    DiskManager* bando_de_dados;
+    DiskManager* banco_de_dados;
     BlockManager* block_manager;
 
     unsigned long long quantidade_de_blocos_de_hash;
@@ -19,18 +22,25 @@ private:
     unsigned long long tamanho_do_hash; // tamanho bruto em bytes sem overhead de meta-dados
     unsigned long long tamanho_do_arquivo_no_banco_de_dados;
     Endereco* hash_table;
+    BlocoDeArquivo bloco_de_inicialização_padrao;
+    Endereco endereco_do_ultimo_bloco_de_overflow;
 
     unsigned long long hash(unsigned int id); // estou usando hash multiplicativo
     void setQuantidadeDeBlocosDeArquivo(unsigned long long quantidade_de_linhas_do_arquivo);
     void setQuantidadeDeBlocosDeHash();
     void setTamanhoDoHash();
     void setTamanhoDoArquivoNoBancoDeDados();
+    void setBlocoDeInicializacaoPadrao();
     void setHashTable();
+    void setBucketOverflow();
+
+    void insereOverflow(Linha dados, Endereco overflow); // insere no bucket de overflow
+    Linha buscaOverflow(unsigned int id, Endereco overflow);
 public:
-    HashManager(unsigned long long quantidade_de_linhas_do_arquivo, DiskManager* bando_de_dados
+    HashManager(unsigned long long quantidade_de_linhas_do_arquivo, DiskManager* banco_de_dados
                 ,BlockManager* block_manager); 
-    void inserirNoHash(unsigned int id, void* dados); // insere no hash
-    void* buscarNoHash(unsigned int id); // busca no hash
+    void inserirNoHash(unsigned int id, Linha dados); // insere no hash
+    Linha buscarNoHash(unsigned int id); // busca no hash
 };
 
 

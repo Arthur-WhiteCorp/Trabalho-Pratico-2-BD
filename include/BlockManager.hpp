@@ -65,6 +65,8 @@ public:
 
     void setTipoDeRegistro(Registro registro);
 
+    Registro getTIpoDeRegistro();
+
     TipoDeBloco getTipoDeBloco(Endereco endereco);
 
     void* LerBloco(Endereco endereco);
@@ -73,6 +75,7 @@ public:
 
     void* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
     void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo, const void* data);
+
 };
 
 #endif

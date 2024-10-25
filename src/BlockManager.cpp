@@ -35,6 +35,10 @@ TipoDeBloco BlockManager::getTipoDeBloco(Endereco endereco){
 
 }
 
+Registro BlockManager::getTIpoDeRegistro(){
+    return tipo_de_registro;
+}
+
 void* BlockManager::LerBloco(Endereco endereco) {
     void* data = banco_de_dados->read(endereco);
     return data;
@@ -142,3 +146,4 @@ void BlockManager::EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned sh
 
 
 }
+

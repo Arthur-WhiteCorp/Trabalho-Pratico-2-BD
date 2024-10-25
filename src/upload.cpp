@@ -96,7 +96,7 @@ int main(int argc, char* argv[]){
     std::cout << *ano_recebido << std::endl;
 
     std::cout << "-------testes com o hash maker------" << std::endl;
-
+    /*
     while (!(data_base_csv.getLineCSV().empty())){
         
     }
@@ -104,22 +104,35 @@ int main(int argc, char* argv[]){
     unsigned long long quantidade_de_linhas = data_base_csv.getNumeroDeLinhasLido(); 
     std::cout << "quantidade de linhas lidas: " << quantidade_de_linhas << std::endl;
     data_base_csv.resetarLocalizacaoDoarquivo();
+    */
+    //1021439ull
 
-    HashManager arquivo_hash = HashManager(quantidade_de_linhas,&banco_de_dados,&block_manager);
+    HashManager arquivo_hash = HashManager(150ull,&banco_de_dados,&block_manager);
 
-    arquivo_hash.inserirNoHash(1, bloco_lido);
+    Linha linha_teste = std::make_tuple(
+        7789u, 
+        "teste string 1", 
+        2184u, 
+        "teste string 2", 
+        8u, 
+        "teste string 3", 
+        "teste 4"
+    );
+    arquivo_hash.inserirNoHash(7789u, linha_teste);
+    arquivo_hash.inserirNoHash(7789u, linha_teste);
+    arquivo_hash.inserirNoHash(7789u, linha_teste);
+    arquivo_hash.inserirNoHash(7789u, linha_teste);
+    arquivo_hash.inserirNoHash(7789u, linha_teste);
+
+
+
+    Linha buscada_no_hash = arquivo_hash.buscarNoHash(7789u);
+
+    std::cout << std::get<2>(buscada_no_hash) << std::endl;
 
     
-    BlocoDeArquivo* bloco_buscado_no_hash =  static_cast<BlocoDeArquivo*>(arquivo_hash.buscarNoHash(1));
-
-    int* recebido_hash =  static_cast<int*> (block_manager.LerCampo(bloco_buscado_no_hash,'a',1u));
-    char* texto_recebido_hash = static_cast<char*>(block_manager.LerCampo(bloco_buscado_no_hash,'a',2U));
-    unsigned short int* ano_recebido_hash = static_cast<unsigned short int*>(block_manager.LerCampo(bloco_buscado_no_hash,'a',3U));
 
 
-    std::cout << *recebido_hash << std::endl;
-    std::cout << texto_recebido_hash << std::endl;
-    std::cout << *ano_recebido_hash << std::endl;
-
+    
     return 0;
 }
