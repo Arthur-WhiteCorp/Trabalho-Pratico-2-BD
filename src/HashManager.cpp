@@ -18,6 +18,7 @@ void HashManager::setQuantidadeDeBlocosDeArquivo(unsigned long long quantidade_d
     quantidade_de_blocos_de_arquivo = tamanho;
     quantidade_de_blocos_enderecados_no_hash = tamanho + (tamanho/3) + 1; // adicona 30% a mais
     std::cout << "quantidade de blocos de arquivos: " << quantidade_de_blocos_de_arquivo << std::endl;
+    std::cout << "quantidade de blocos enderecados no hash: " << quantidade_de_blocos_enderecados_no_hash << std::endl;
 }
 
 void HashManager::setTamanhoDoHash(){
@@ -38,12 +39,14 @@ void HashManager::setTamanhoDoArquivoNoBancoDeDados(){
 
 void HashManager::setHashTable(){
     hash_table = new Endereco[quantidade_de_blocos_enderecados_no_hash];
-
     for (unsigned long long i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
         hash_table[i] = banco_de_dados->memoryAlloc(1u);
+        std::cout << hash_table[i] << std::endl;
         block_manager->EscreverBloco(&bloco_de_inicialização_padrao, hash_table[i]);
+       
     }
-    
+    banco_de_dados->sincronizar();
+
 }
 
 unsigned long long HashManager::hash(unsigned int id){
@@ -54,6 +57,9 @@ unsigned long long HashManager::hash(unsigned int id){
 void HashManager::inserirNoHash(unsigned int id, Linha dados){
 
     unsigned long long posicao = hash(id);
+    std::cout << id << std::endl;
+    std::cout << posicao << std::endl;
+    std::cout << hash_table[posicao] << std::endl;
     char escrever_em;
     std::string titulo = std::get<1>(dados);
     unsigned short int ano = std::get<2>(dados);

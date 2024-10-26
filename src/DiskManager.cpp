@@ -22,6 +22,7 @@ DiskManager::DiskManager(const char* file_path, unsigned int espaco_de_memoria, 
     setQuantidadeDeBlocos();
     setVetorAlocacao();
     setVetorEspaco();
+    mapMemory(0);
 }
 
 int DiskManager::criarEspacoNaMemoria(){
@@ -137,43 +138,70 @@ Endereco DiskManager::getProxEnderecoDeProcura() const{
 };
 
 
-void* DiskManager::read(Endereco endereco) const {
-        Endereco endereco_real = endereco * tamanho_do_bloco;
+void* DiskManager::read(Endereco endereco){
+        
+    if (vetor_alocacao[endereco]){
+        std::cerr << "Erro: endereço não alocado\n";
+        std::cout << vetor_alocacao[endereco] << std::endl;
+        return nullptr; // não escreve em endereços não alocados
+    }
+   
+    Endereco endereco_real = (endereco-ultimo_map) * tamanho_do_bloco;
 
-        // Check for address overflow
-        if (endereco_real > std::numeric_limits<off_t>::max()) {
-            std::cerr << "Erro: overflow de endereço\n";
-            return nullptr;
+   
+
+    if (endereco >= ultimo_map+tamanho_do_map or endereco < ultimo_map){
+        if (msync(mapped_memory,tamanho_do_ultimo_map_bytes, MS_SYNC) == -1) {
+            std::cerr << "Erro: msync falhou: " << strerror(errno) << std::endl;
         }
-
-        // Map the block into memory
-        void* mapped_mem = mmap(NULL, tamanho_do_bloco, PROT_READ, MAP_SHARED, 
-                                arquivo, static_cast<off_t>(endereco_real));
-        if (mapped_mem == MAP_FAILED) {
-            std::cerr << "mmap falhou: " << strerror(errno) << std::endl;
-            return nullptr;
+        if (munmap(mapped_memory, tamanho_do_ultimo_map_bytes) == -1) {
+            std::cerr << "Erro: munmap falhou: " << strerror(errno) << std::endl;
         }
+        mapMemory(endereco);
 
-        // Allocate memory for the copy
+        endereco_real = (endereco-ultimo_map) * tamanho_do_bloco;
+        std::cout << endereco_real << std::endl;
+        std::cout << endereco << std::endl;
         void* copy = malloc(tamanho_do_bloco);
+
+        if (endereco_real > std::numeric_limits<off_t>::max()) {
+            std::cerr << "Erro: overflow de endereço na leitura\n";
+            std::cout << endereco_real << std::endl;
+            return nullptr;
+        }
+
+
         if (copy == nullptr) {
-            std::cerr << "Falha ao alocar memória\n";
-            munmap(mapped_mem, tamanho_do_bloco);
-            return nullptr;
-        }
+                std::cerr << "Falha ao alocar memória\n";
+                return nullptr;
+            }
 
-        // Copy the contents of the mapped memory to the allocated buffer
-        memcpy(copy, mapped_mem, tamanho_do_bloco);
+        memcpy(copy, static_cast<char*>(mapped_memory) + endereco_real, tamanho_do_bloco);
 
-        // Unmap the original block
-        if (munmap(mapped_mem, tamanho_do_bloco) == -1) {
-            std::cerr << "munmap falhou: " << strerror(errno) << std::endl;
-            free(copy);  // Free allocated memory if unmapping fails
-            return nullptr;
-        }
 
-        // Return the address of the copied data
         return copy;
+
+
+    }else{
+        if (endereco_real > std::numeric_limits<off_t>::max()) {
+            std::cerr << "Erro: overflow de endereço na leitura\n";
+            std::cout << endereco_real << std::endl;
+            return nullptr;
+        }
+    
+        void* copy = malloc(tamanho_do_bloco);
+
+        if (copy == nullptr) {
+                std::cerr << "Falha ao alocar memória\n";
+                return nullptr;
+            }
+
+        memcpy(copy, static_cast<char*>(mapped_memory) + endereco_real, tamanho_do_bloco);
+
+
+        return copy;
+    }
+
 }
 
 unsigned long long DiskManager::getQuantidadeDeBlocos() const{
@@ -182,4 +210,42 @@ unsigned long long DiskManager::getQuantidadeDeBlocos() const{
 
 unsigned int DiskManager::getTamanhoDoBloco() const{    
     return tamanho_do_bloco;
+}
+
+void DiskManager::mapMemory(Endereco endereco){
+    Endereco endereco_real = endereco * tamanho_do_bloco;
+    unsigned long long tamanho_em_bytes; 
+
+
+    if ((quantidade_de_blocos - endereco) < tamanho_do_map ){
+        tamanho_em_bytes = (quantidade_de_blocos - endereco) * tamanho_do_bloco;
+        std::cout << "tamanho: " << quantidade_de_blocos - endereco << std::endl;
+
+    }else{
+        tamanho_em_bytes = tamanho_do_bloco*tamanho_do_map;
+        std::cout << "tamanho: " << tamanho_em_bytes<< std::endl;
+
+    }
+    tamanho_do_ultimo_map_bytes = tamanho_em_bytes;
+
+
+    std::cout << tamanho_em_bytes << std::endl;
+    std::cout << sizeof(off_t);
+
+    void* mapped_addr = mmap(NULL, tamanho_em_bytes, PROT_READ | PROT_WRITE,
+                            MAP_SHARED, arquivo, endereco_real);
+    if (mapped_addr == MAP_FAILED) {
+        std::cerr << "mmap falhou: " << strerror(errno) << std::endl;
+        return; 
+    }
+    mapped_memory = mapped_addr;
+
+    ultimo_map = endereco;
+}
+
+void DiskManager::sincronizar(){
+    if (msync(mapped_memory, tamanho_do_ultimo_map_bytes, MS_SYNC) == -1) {
+        std::cerr << "Erro: msync falhou: " << strerror(errno) << std::endl;
+    }
+
 }

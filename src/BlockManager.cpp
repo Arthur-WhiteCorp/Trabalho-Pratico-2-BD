@@ -50,9 +50,9 @@ void BlockManager::EscreverBloco(void* bloco, Endereco endereco){
     unsigned char* byte_data = static_cast<unsigned char*>(bloco);
     TipoDeBloco tipo_de_bloco = static_cast<TipoDeBloco>(*byte_data);
 
-     
     switch (tipo_de_bloco){
     case Arquivo: {
+
         BlocoDeArquivo* bloco_arquivo = static_cast<BlocoDeArquivo*>(bloco);
         banco_de_dados->write(endereco, bloco_arquivo);
         break;
@@ -73,6 +73,7 @@ void BlockManager::EscreverBloco(void* bloco, Endereco endereco){
         break;
     }
     }   
+
 }
 
 void* BlockManager::LerCampo(BlocoDeArquivo* bloco, char registro ,unsigned short int campo){

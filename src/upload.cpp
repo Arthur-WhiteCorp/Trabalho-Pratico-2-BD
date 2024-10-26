@@ -37,7 +37,7 @@ int main(int argc, char* argv[]){
     
 
 
-    DiskManager banco_de_dados = DiskManager("./my_db.db",4000u,&infos[0]);
+    DiskManager banco_de_dados = DiskManager("./my_db.db",3000u,&infos[0]);
 
     std::cout << data_base_csv.getTamanhoDoCSV() << " bytes de arquivo" << std::endl;
 
@@ -73,7 +73,8 @@ int main(int argc, char* argv[]){
 
     unsigned long long endereco = banco_de_dados.memoryAlloc(1U);
 
-    
+    std::cout << "primeiro alocado: " << endereco << std::endl;
+
     block_manager.EscreverBloco(&bloco_de_arquivo,endereco);
     
     BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(endereco));
@@ -95,19 +96,23 @@ int main(int argc, char* argv[]){
     std::cout << texto_recebido << std::endl;
     std::cout << *ano_recebido << std::endl;
 
+
+
+ 
+
     std::cout << "-------testes com o hash maker------" << std::endl;
-    /*
+  /*
     while (!(data_base_csv.getLineCSV().empty())){
         
     }
-
+    */
     unsigned long long quantidade_de_linhas = data_base_csv.getNumeroDeLinhasLido(); 
     std::cout << "quantidade de linhas lidas: " << quantidade_de_linhas << std::endl;
     data_base_csv.resetarLocalizacaoDoarquivo();
-    */
+    
     //1021439ull
 
-    HashManager arquivo_hash = HashManager(150ull,&banco_de_dados,&block_manager);
+    HashManager arquivo_hash = HashManager(1021439ll,&banco_de_dados,&block_manager);
 
     Linha linha_teste = std::make_tuple(
         7789u, 
@@ -128,11 +133,12 @@ int main(int argc, char* argv[]){
 
     Linha buscada_no_hash = arquivo_hash.buscarNoHash(7789u);
 
-    std::cout << std::get<2>(buscada_no_hash) << std::endl;
+    std::cout << std::get<6>(buscada_no_hash) << std::endl;
 
     
 
 
-    
+
     return 0;
 }
+
