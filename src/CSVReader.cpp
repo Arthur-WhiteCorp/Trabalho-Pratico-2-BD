@@ -1,6 +1,7 @@
 #include "CSVReader.hpp"
 #include <iostream>
 #include <fstream>
+#include <thread>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -31,32 +32,74 @@ void CSVReader::setNumeroDeColunas(unsigned int num_colunas){
 }
 
 std::vector<std::string> CSVReader::getLineCSV(){
-    std::string linha, campo, nova_linha_id;
-    std::regex quoted_number_regex("\"[0-9]+\"");
 
     linha_atual.clear();
 
-    if (getline(my_csv,campo,';')){
+    char c;
+    std::string campo = "";
+    bool is_inside_quotes = false;
+    int fields_qty = 0;
 
-        linha_atual.emplace_back(campo);
+    while(my_csv.get(c)) {
 
-        while ((linha_atual.size()) <= (numero_de_colunas - 1)){ // lê enquanto o numero de colunas for menor ou
-            if (linha_atual.size() < numero_de_colunas -1 ){
-                getline(my_csv, campo, ';');                
-                linha_atual.emplace_back(campo);
-            }else{
-                getline(my_csv,campo);
-                linha_atual.emplace_back(campo);
+        if (!is_inside_quotes && ((c == ' ') || (c == '\n'))) {
+            continue;
+        }
+
+        if (c == ';' && !is_inside_quotes) {
+            fields_qty++;
+            // std::cout << campo << "\n\n" << std::endl;
+
+            if (fields_qty == 0){
+                id_da_linha_atual = stoi(campo);
             }
 
+            linha_atual.emplace_back(campo);
+            campo = "";
+
+            if (fields_qty == 7) {
+                numero_de_linhas_lido++;
+                fields_qty = 0;
+            }
         }
-        std::string numero_sem_aspas = std::regex_replace(linha_atual[0], std::regex("\""), "");
-        id_da_linha_atual = stoi(numero_sem_aspas);                       
-        numero_de_linhas_lido++;
-    }else{
-        arquivo_terminado = true;
+
+        if (c == '"') {
+            is_inside_quotes = !is_inside_quotes;
+        }
+
+        // inicio de um campo
+        if (is_inside_quotes && (c != '"')) {
+            campo += c;
+        }
     }
+
+    std::cout << campo << std::endl;
+
+    arquivo_terminado = true;
     return linha_atual;
+
+    // if (getline(my_csv, line)){
+        // std::cout << "Linha completa lida: " << line << std::endl;
+
+        // linha_atual.emplace_back(line);  // Armazena a linha completa em `linha_atual` se necessário
+
+        // while ((linha_atual.size()) <= (numero_de_colunas - 1)){ // lê enquanto o numero de colunas for menor ou
+        //     if (linha_atual.size() < numero_de_colunas -1 ){
+        //         getline(my_csv, campo, ';');                
+        //         linha_atual.emplace_back(campo);
+        //     }else{
+        //         getline(my_csv,campo);
+        //         linha_atual.emplace_back(campo);
+        //     }
+
+        // }
+        // std::string numero_sem_aspas = std::regex_replace(linha_atual[0], std::regex("\""), "");
+        // id_da_linha_atual = stoi(numero_sem_aspas);                       
+        // numero_de_linhas_lido++;
+    // }else{
+    //     arquivo_terminado = true;
+    // }
+    // return linha_atual;
 }
 std::vector<std::string> CSVReader::getLinhaAtual(){
     if (linha_atual.empty()){

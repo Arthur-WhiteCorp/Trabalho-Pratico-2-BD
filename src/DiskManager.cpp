@@ -160,8 +160,6 @@ void* DiskManager::read(Endereco endereco){
         mapMemory(endereco);
 
         endereco_real = (endereco-ultimo_map) * tamanho_do_bloco;
-        std::cout << endereco_real << std::endl;
-        std::cout << endereco << std::endl;
         void* copy = malloc(tamanho_do_bloco);
 
         if (endereco_real > std::numeric_limits<off_t>::max()) {
@@ -219,18 +217,11 @@ void DiskManager::mapMemory(Endereco endereco){
 
     if ((quantidade_de_blocos - endereco) < tamanho_do_map ){
         tamanho_em_bytes = (quantidade_de_blocos - endereco) * tamanho_do_bloco;
-        std::cout << "tamanho: " << quantidade_de_blocos - endereco << std::endl;
-
     }else{
         tamanho_em_bytes = tamanho_do_bloco*tamanho_do_map;
-        std::cout << "tamanho: " << tamanho_em_bytes<< std::endl;
-
     }
     tamanho_do_ultimo_map_bytes = tamanho_em_bytes;
 
-
-    std::cout << tamanho_em_bytes << std::endl;
-    std::cout << sizeof(off_t);
 
     void* mapped_addr = mmap(NULL, tamanho_em_bytes, PROT_READ | PROT_WRITE,
                             MAP_SHARED, arquivo, endereco_real);

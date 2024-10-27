@@ -96,8 +96,6 @@ void DiskManager::write(Endereco endereco, T* dados){
             return;
         }
 
-        std::cout << endereco_real << std::endl;
-        std::cout << ultimo_map << std::endl;
         memcpy(static_cast<char*>(mapped_memory) + endereco_real, dados, sizeof(T));
     }
 }

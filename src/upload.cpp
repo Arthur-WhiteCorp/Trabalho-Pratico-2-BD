@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <vector>
 #include <chrono>
@@ -7,6 +8,26 @@
 #include "DiskManager.hpp"
 #include "BlockManager.hpp"
 #include "HashManager.hpp"
+
+ std::string retiraAspasDoCampo(std::vector<std::string> linha) {
+
+        std::string result;
+        std::string campo = linha[1];
+
+        // Remove aspas do inicio e fim do campo titulo
+        if ((campo.length() > 1) or (campo != "NULL")) {
+            campo.erase(0, 1);
+            campo.erase(campo.length()-1, 1);
+        }
+
+        if (campo.length() == 0 or campo == "NULL"){
+            campo = "NULL";
+        }
+
+        result = campo;
+
+        return result; 
+}
 
 int main(int argc, char* argv[]){
     OperationalSystemDescriptor os_info;
@@ -96,16 +117,15 @@ int main(int argc, char* argv[]){
     std::cout << texto_recebido << std::endl;
     std::cout << *ano_recebido << std::endl;
 
-
-
- 
-
     std::cout << "-------testes com o hash maker------" << std::endl;
-  /*
+  
     while (!(data_base_csv.getLineCSV().empty())){
-        
+        unsigned int id = (unsigned int)data_base_csv.getIdDaLinhaAtual();
+        if (!data_base_csv.getLinhaAtual().empty()) {
+            std::string titulo = retiraAspasDoCampo(data_base_csv.getLinhaAtual());
+        }
     }
-    */
+    
     unsigned long long quantidade_de_linhas = data_base_csv.getNumeroDeLinhasLido(); 
     std::cout << "quantidade de linhas lidas: " << quantidade_de_linhas << std::endl;
     data_base_csv.resetarLocalizacaoDoarquivo();
