@@ -15,7 +15,7 @@
 #define TAMANHO_DO_BLOCO_DE_INDICE_SECUNDARIO // em bytes
 
 
-enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Erro, Catalogo}; // o tipo é 4 bytes
+enum TipoDeBloco {Hash, Arquivo, Indice, IndiceSecundario, Catalogo, Erro}; // o tipo é 4 bytes
 
 struct ItemDoHash;
 

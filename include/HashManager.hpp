@@ -41,6 +41,9 @@ public:
                 ,BlockManager* block_manager); 
     void inserirNoHash(unsigned int id, Linha dados); // insere no hash
     Linha buscarNoHash(unsigned int id); // busca no hash
+    void saveHash();
+    void loadHash(Endereco endereco);
+
 };
 
 

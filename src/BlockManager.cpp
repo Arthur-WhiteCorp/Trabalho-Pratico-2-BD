@@ -27,7 +27,7 @@ TipoDeBloco BlockManager::getTipoDeBloco(Endereco endereco){
     unsigned char* byte_data = static_cast<unsigned char*>(data);
     TipoDeBloco tipo_de_bloco = static_cast<TipoDeBloco>(*byte_data);
     
-    if (tipo_de_bloco >=0 and tipo_de_bloco <= 3){
+    if (tipo_de_bloco >=0 and tipo_de_bloco <= 4){
         return tipo_de_bloco;
     }
 
