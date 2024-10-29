@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/mman.h> // For mmap, munmap, msync
 #include <cstring>    // For memset, strcpy
+#include <fstream>
 #include "OperationalSystemDescriptor.hpp"
 #include "DiskManager.hpp"
 
@@ -238,5 +239,41 @@ void DiskManager::sincronizar(){
     if (msync(mapped_memory, tamanho_do_ultimo_map_bytes, MS_SYNC) == -1) {
         std::cerr << "Erro: msync falhou: " << strerror(errno) << std::endl;
     }
+
+}
+
+
+
+void DiskManager::saveDiskData(){
+    std::ofstream file("../DiskData.ds", std::ios::binary);
+    if (!file) {
+        std::cerr << "Erro ao abrir o arquivo" << std::endl;
+        return;
+    }
+
+    size_t tamanho_alocacao = vetor_alocacao.size();
+    size_t tamanho_espaco = vetor_espaco.size().
+
+    file.write(reinterpret_cast<const char*>(&espaco_de_memoria), sizeof(espaco_de_memoria));
+    file.write(reinterpret_cast<const char*>(&tamanho_do_bloco), sizeof(tamanho_do_bloco));
+    file.write(reinterpret_cast<const char*>(&quantidade_de_blocos), sizeof(quantidade_de_blocos));
+    file.write(reinterpret_cast<const char*>(&prox_endereco_de_procura), sizeof(prox_endereco_de_procura));
+    file.write(reinterpret_cast<const char*>(&tamanho_do_map), sizeof(tamanho_do_map));
+
+    file.write(reinterpret_cast<const char*>(&tamanho_alocacao), sizeof(tamanho_alocacao));
+
+    size_t numBytes = (vetor_alocacao.size() + 7) / 8; // Round up to the nearest byte
+    std::vector<uint8_t> byteArray(numBytes, 0);
+
+     for (size_t i = 0; i < vetor_alocacao.size(); ++i) {
+        if (vetor_alocacao[i]) {
+            byteArray[i / 8] |= (1 << (i % 8)); // Set the corresponding bit
+        }
+    }
+
+    file.write(reinterpret_cast<const char*>(byteArray.data()), numBytes);
+
+
+    file.write(reinterpret_cast<const char*>(&tamanho_espaco), sizeof(tamanho_espaco));
 
 }

@@ -38,6 +38,7 @@ private:
 public:
     
     DiskManager(const char* file_path, unsigned int espaco_de_memoria, Device* dispositivo_de_memoria);
+    DiskManager(const char* disk_manager_file, const char* disk_data_file); // localização do arquivo de metadados e de dados
     const std::vector<bool>& getVetorAlocacao() const;
     const std::vector<unsigned short int>& getVetorEspaco() const;
     Endereco getProxEnderecoDeProcura() const;
@@ -51,6 +52,9 @@ public:
     void write(Endereco endereco, T* dados);
     void* read(Endereco endereco);
     void sincronizar();
+
+    void saveDiskData();
+    void loadDiskData();
 
 
 };
