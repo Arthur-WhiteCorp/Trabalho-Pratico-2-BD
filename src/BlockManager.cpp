@@ -72,6 +72,11 @@ void BlockManager::EscreverBloco(void* bloco, Endereco endereco){
         banco_de_dados->write(endereco, bloco_indice_secundario);
         break;
     }
+    case Catalogo:{
+        BlocoDeCatalogo* bloco_de_catalogo = static_cast<BlocoDeCatalogo*>(bloco);
+        banco_de_dados->write(endereco, bloco_de_catalogo);
+        break;
+    }
     }   
 
 }

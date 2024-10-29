@@ -83,6 +83,8 @@ public:
 
     void* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
     void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo, const void* data);
+    void setCatalogo();
+    void lerCatalogo();
 
 };
 

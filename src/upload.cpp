@@ -94,6 +94,7 @@ int main(int argc, char* argv[]){
 
     unsigned long long endereco = banco_de_dados.memoryAlloc(1U);
 
+
     std::cout << "primeiro alocado: " << endereco << std::endl;
 
     block_manager.EscreverBloco(&bloco_de_arquivo,endereco);
