@@ -244,36 +244,73 @@ void DiskManager::sincronizar(){
 
 
 
-void DiskManager::saveDiskData(){
+void DiskManager::saveDiskData() {
     std::ofstream file("../DiskData.ds", std::ios::binary);
     if (!file) {
         std::cerr << "Erro ao abrir o arquivo" << std::endl;
         return;
     }
 
+    // Size of vetor_alocacao and vetor_espaco
     size_t tamanho_alocacao = vetor_alocacao.size();
-    size_t tamanho_espaco = vetor_espaco.size().
+    size_t tamanho_espaco = vetor_espaco.size();
 
-    file.write(reinterpret_cast<const char*>(&espaco_de_memoria), sizeof(espaco_de_memoria));
-    file.write(reinterpret_cast<const char*>(&tamanho_do_bloco), sizeof(tamanho_do_bloco));
-    file.write(reinterpret_cast<const char*>(&quantidade_de_blocos), sizeof(quantidade_de_blocos));
-    file.write(reinterpret_cast<const char*>(&prox_endereco_de_procura), sizeof(prox_endereco_de_procura));
-    file.write(reinterpret_cast<const char*>(&tamanho_do_map), sizeof(tamanho_do_map));
+    // Write fixed-size variables
+    if (!file.write(reinterpret_cast<const char*>(&espaco_de_memoria), sizeof(espaco_de_memoria))) {
+        std::cerr << "Erro ao escrever espaco_de_memoria" << std::endl;
+        return;
+    }
+    if (!file.write(reinterpret_cast<const char*>(&tamanho_do_bloco), sizeof(tamanho_do_bloco))) {
+        std::cerr << "Erro ao escrever tamanho_do_bloco" << std::endl;
+        return;
+    }
+    if (!file.write(reinterpret_cast<const char*>(&quantidade_de_blocos), sizeof(quantidade_de_blocos))) {
+        std::cerr << "Erro ao escrever quantidade_de_blocos" << std::endl;
+        return;
+    }
+    if (!file.write(reinterpret_cast<const char*>(&prox_endereco_de_procura), sizeof(prox_endereco_de_procura))) {
+        std::cerr << "Erro ao escrever prox_endereco_de_procura" << std::endl;
+        return;
+    }
+    if (!file.write(reinterpret_cast<const char*>(&tamanho_do_map), sizeof(tamanho_do_map))) {
+        std::cerr << "Erro ao escrever tamanho_do_map" << std::endl;
+        return;
+    }
 
-    file.write(reinterpret_cast<const char*>(&tamanho_alocacao), sizeof(tamanho_alocacao));
+    // Write size of vetor_alocacao
+    if (!file.write(reinterpret_cast<const char*>(&tamanho_alocacao), sizeof(tamanho_alocacao))) {
+        std::cerr << "Erro ao escrever tamanho_alocacao" << std::endl;
+        return;
+    }
 
-    size_t numBytes = (vetor_alocacao.size() + 7) / 8; // Round up to the nearest byte
+    // Prepare the byte array for vetor_alocacao
+    size_t numBytes = (tamanho_alocacao + 7) / 8; // Round up to the nearest byte
     std::vector<uint8_t> byteArray(numBytes, 0);
 
-     for (size_t i = 0; i < vetor_alocacao.size(); ++i) {
+    for (size_t i = 0; i < tamanho_alocacao; ++i) {
         if (vetor_alocacao[i]) {
             byteArray[i / 8] |= (1 << (i % 8)); // Set the corresponding bit
         }
     }
 
-    file.write(reinterpret_cast<const char*>(byteArray.data()), numBytes);
+    // Write the byte array
+    if (!file.write(reinterpret_cast<const char*>(byteArray.data()), numBytes)) {
+        std::cerr << "Erro ao escrever vetor_alocacao" << std::endl;
+        return;
+    }
 
+    // Write size of vetor_espaco
+    if (!file.write(reinterpret_cast<const char*>(&tamanho_espaco), sizeof(tamanho_espaco))) {
+        std::cerr << "Erro ao escrever tamanho_espaco" << std::endl;
+        return;
+    }
 
-    file.write(reinterpret_cast<const char*>(&tamanho_espaco), sizeof(tamanho_espaco));
+    // Write vetor_espaco
+    if (!file.write(reinterpret_cast<const char*>(vetor_espaco.data()), tamanho_espaco * sizeof(unsigned short int))) {
+        std::cerr << "Erro ao escrever vetor_espaco" << std::endl;
+        return;
+    }
 
+    // Close the file
+    file.close();
 }
