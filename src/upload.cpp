@@ -101,12 +101,13 @@ int main(int argc, char* argv[]){
     block_manager.setCatalogo(endereco);
     block_manager.carregarCatalogo();
 
+    block_manager.setEnderecoHashNoCatalogo(777ull);
+
+    block_manager.atualizarCatalogo();
+
+    std::cout << block_manager.getEnderecoHashNoCatalogo() << std::endl;
 
 
-    
-
-
-    exit(1);
     std::cout << "-------testes com o hash maker------" << std::endl;
   
     while (!(data_base_csv.getLineCSV().empty())){
@@ -148,7 +149,7 @@ int main(int argc, char* argv[]){
     
 
     banco_de_dados.saveDiskMetaData("./metadata.dsk");
-
+    arquivo_hash.saveHash();
 
     return 0;
 }

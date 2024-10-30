@@ -29,29 +29,14 @@ int main() {
         Registro::Char, 
         Registro::Int, 
         Registro::Data, 
-        Registro::VarChar};
-
-    BlocoDeArquivo bloco_de_arquivo;
-    bloco_de_arquivo.tipo = Arquivo;
-    bloco_de_arquivo.meta_dados = registro;
-    bloco_de_arquivo.registro_a[0] = 'a';
-    bloco_de_arquivo.registro_b[0] = 'b';
-    bloco_de_arquivo.endereço_bucket_overflow = 0;
+        Registro::VarChar
+        };
 
     BlockManager block_manager = BlockManager(&data_base,registro);
 
-    BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(0ull));
+    BlocoDeCatalogo* catalogo = static_cast<BlocoDeCatalogo*>(block_manager.LerBloco(0ull));
 
-    
-
-    int* recebido =  static_cast<int*> (block_manager.LerCampo(bloco_lido,'a',1u));
-    char* texto_recebido = static_cast<char*>(block_manager.LerCampo(bloco_lido,'a',2U));
-    unsigned short int* ano_recebido = static_cast<unsigned short int*>(block_manager.LerCampo(bloco_lido,'a',3U));
-
-
-    std::cout << *recebido << std::endl;
-    std::cout << texto_recebido << std::endl;
-    std::cout << *ano_recebido << std::endl;
+    std::cout << catalogo->endereco_do_arquivo_de_hash << std::endl;
 
     return 0;
 }

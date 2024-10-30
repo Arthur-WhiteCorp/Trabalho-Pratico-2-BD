@@ -244,3 +244,28 @@ void HashManager::setBucketOverflow(){
     block_manager->EscreverBloco(&overflow, bloco_de_inicialização_padrao.endereço_bucket_overflow);
 
 }
+
+void HashManager::saveHash(){
+    BlocoDeHash bloco_de_hash;
+    Endereco endereco_de_insercao;
+    int posicao_atual = 0;
+
+    for (int i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
+        bloco_de_hash.items_do_hash[posicao_atual] = hash_table[i];
+        posicao_atual++;
+        if (posicao_atual == ITEMS_DE_HASH_POR_BLOCO){
+            endereco_de_insercao = banco_de_dados->memoryAlloc(1u);
+            block_manager->EscreverBloco(&bloco_de_hash,endereco_de_insercao);
+            posicao_atual = 0;
+        }
+    }
+
+    if (posicao_atual > 0) {
+        // Zero out unused slots to avoid "dirty" data
+        for (int i = posicao_atual; i < ITEMS_DE_HASH_POR_BLOCO; i++) {
+            bloco_de_hash.items_do_hash[i] = 0;
+        }
+        endereco_de_insercao = banco_de_dados->memoryAlloc(1u);
+        block_manager->EscreverBloco(&bloco_de_hash, endereco_de_insercao);
+    }
+}

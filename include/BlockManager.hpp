@@ -51,7 +51,7 @@ struct BlocoDeCatalogo{
 
 struct BlocoDeHash{ // 4092 bytes
     TipoDeBloco tipo = Hash; // tipo de bloco, 4 bytes
-    std::array<Endereco,ITEMS_DE_HASH_POR_BLOCO> items_do_hash; // items do hash, 4080 bytes
+    std::array<Endereco,ITEMS_DE_HASH_POR_BLOCO> items_do_hash = {}; // items do hash, 4080 bytes
 
 };
 
