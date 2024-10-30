@@ -97,30 +97,16 @@ int main(int argc, char* argv[]){
 
     std::cout << "primeiro alocado: " << endereco << std::endl;
 
-    block_manager.EscreverBloco(&bloco_de_arquivo,endereco);
+
+    block_manager.setCatalogo(endereco);
+    block_manager.carregarCatalogo();
+
+
 
     
-    BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(endereco));
-
-    
-    int a = 8796544;
-    block_manager.EscreverCampo(bloco_lido,'a',1u,&a);
-    std::string texto = "a vida é bela fhsiofhisfdhiosfdh";
-    block_manager.EscreverCampo(bloco_lido,'a',2u,texto.c_str());
-    unsigned short int ano_de_piblicacao = 2184u;
-    block_manager.EscreverCampo(bloco_lido,'a',3u,&ano_de_piblicacao);
-
-    int* recebido =  static_cast<int*> (block_manager.LerCampo(bloco_lido,'a',1u));
-    char* texto_recebido = static_cast<char*>(block_manager.LerCampo(bloco_lido,'a',2U));
-    unsigned short int* ano_recebido = static_cast<unsigned short int*>(block_manager.LerCampo(bloco_lido,'a',3U));
 
 
-    std::cout << *recebido << std::endl;
-    std::cout << texto_recebido << std::endl;
-    std::cout << *ano_recebido << std::endl;
-
-    block_manager.EscreverBloco(bloco_lido,endereco);
-
+    exit(1);
     std::cout << "-------testes com o hash maker------" << std::endl;
   
     while (!(data_base_csv.getLineCSV().empty())){

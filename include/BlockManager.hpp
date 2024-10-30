@@ -39,9 +39,11 @@ struct BlocoDeArquivo{ // 3114 bytes
 
 };
 
-struct BlocoDeCatalogo{ // 3114 bytes
+struct BlocoDeCatalogo{ 
     TipoDeBloco tipo = Catalogo;
     Endereco endereco_do_arquivo_de_hash;
+    unsigned long long quantidade_de_blocos_enderecados_no_hash = 0ull;
+    unsigned long long quantidade_de_blocos_de_hash = 0ull;
     Endereco endereco_da_arvore_b_plus_primaria;
     Endereco endereco_da_arvore_b_plus_secundaria;
 
@@ -66,9 +68,12 @@ class BlockManager{
 private:
     Registro tipo_de_registro; // cada bloco de Arquivo recebe  somente um tipo de registro
     DiskManager* banco_de_dados;
+    Endereco endereco_do_catalogo; // endereço do catálogo sendo utilizado
     BlocoDeCatalogo catalogo;
 
+
 public:
+
     BlockManager(DiskManager* banco_de_dados,  Registro registro);
     BlockManager(DiskManager* banco_de_dados);
 
@@ -84,9 +89,22 @@ public:
 
     void* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
     void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo, const void* data);
-    void setCatalogo(Endereco endereco); // escreve um bloco de catalogo no endereço
-    void atualizarCatalogo();
-    BlocoDeCatalogo lerCatalogo(Endereco endereco); // carrega um bloco de catalogo do endereço
+    void setCatalogo(Endereco endereco); // Inicia um bloco de catalogo no endereço
+    void atualizarCatalogo(); // Escreve o catalogo do obejeto na memória secundária no endereco_de_catalogo
+    void carregarCatalogo(); // carrega um catalogo para o objeto endereço
+    void carregarCatalogo(Endereco endereco);
+
+    void setEnderecoHashNoCatalogo(Endereco endereco);
+    void setEnderecoArvoreBPlusPrimariaNoCatalogo(Endereco endereco);
+    void setEnderecoArvoreBPlusSecundariaNoCatalogo(Endereco endereco);
+    void setQuantidadeDeBlocosEnderecadosNoHash(unsigned long long quantidade_de_blocos_enderecados_no_hash);
+    void setQuantidadeDeBlocosDeHash(unsigned long long quantidade_de_blocos_de_hash);
+
+    Endereco getEnderecoHashNoCatalogo();
+    Endereco getEnderecoArvoreBPlusPrimariaNoCatalogo();
+    Endereco getEnderecoArvoreBPlusSecundariaNoCatalogo();
+    unsigned long long getQuantidadeDeBlocosEnderecadosNoHash();
+    unsigned long long getQuantidadeDeBlocosDeHash();
 
 };
 

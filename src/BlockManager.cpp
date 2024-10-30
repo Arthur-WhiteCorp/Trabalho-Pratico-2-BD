@@ -159,5 +159,65 @@ void BlockManager::EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned sh
 
 void BlockManager::setCatalogo(Endereco endereco){
     BlocoDeCatalogo catalogo;
+    EscreverBloco(&catalogo,endereco);
+    endereco_do_catalogo = endereco;
+}
 
+void BlockManager::carregarCatalogo(){
+    BlocoDeCatalogo* catalogo_lido = static_cast<BlocoDeCatalogo*>(LerBloco(endereco_do_catalogo));
+    this->catalogo = *catalogo_lido;
+    free(catalogo_lido);
+}
+
+void BlockManager::carregarCatalogo(Endereco endereco){
+    BlocoDeCatalogo* catalogo_lido = static_cast<BlocoDeCatalogo*>(LerBloco(endereco));
+    this->catalogo = *catalogo_lido;
+    free(catalogo_lido);
+    endereco_do_catalogo = endereco;
+
+}
+
+void BlockManager::atualizarCatalogo(){
+    EscreverBloco(&catalogo,endereco_do_catalogo);
+}
+
+void BlockManager::setEnderecoHashNoCatalogo(Endereco endereco){
+    catalogo.endereco_do_arquivo_de_hash = endereco;
+}
+
+void BlockManager::setEnderecoArvoreBPlusPrimariaNoCatalogo(Endereco endereco){
+    catalogo.endereco_da_arvore_b_plus_primaria = endereco;
+}
+
+void BlockManager::setEnderecoArvoreBPlusSecundariaNoCatalogo(Endereco endereco){
+    catalogo.endereco_da_arvore_b_plus_secundaria = endereco;
+}
+
+void BlockManager::setQuantidadeDeBlocosEnderecadosNoHash(unsigned long long quantidade){
+    catalogo.quantidade_de_blocos_enderecados_no_hash = quantidade;
+}
+
+void BlockManager::setQuantidadeDeBlocosDeHash(unsigned long long quantidade){
+    catalogo.quantidade_de_blocos_de_hash = quantidade;
+}
+
+
+Endereco BlockManager::getEnderecoHashNoCatalogo(){
+    return catalogo.endereco_do_arquivo_de_hash;
+}
+
+Endereco BlockManager::getEnderecoArvoreBPlusPrimariaNoCatalogo(){
+    return catalogo.endereco_da_arvore_b_plus_primaria;
+}
+
+Endereco BlockManager::getEnderecoArvoreBPlusSecundariaNoCatalogo(){
+    return catalogo.endereco_da_arvore_b_plus_secundaria;
+}
+
+unsigned long long BlockManager::getQuantidadeDeBlocosEnderecadosNoHash(){
+    return catalogo.quantidade_de_blocos_enderecados_no_hash;
+}
+
+unsigned long long BlockManager::getQuantidadeDeBlocosDeHash(){
+    return catalogo.quantidade_de_blocos_de_hash;
 }
