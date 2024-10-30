@@ -33,6 +33,7 @@ private:
     void preencheEndereco(Endereco endereco, unsigned int tamanho);
     Endereco procuraEndereco(unsigned int tamanho); // de "tamanho" blocos
     void mapMemory(Endereco endereco);
+    void abrirArquivo(const char* file_path);
 
 
 public:
@@ -53,8 +54,8 @@ public:
     void* read(Endereco endereco);
     void sincronizar();
 
-    void saveDiskData();
-    void loadDiskData();
+    void loadDiskMetaData(const char* disk_manager_file);
+    void saveDiskMetaData(const char* disk_manager_file);
 
 
 };

@@ -26,6 +26,22 @@ DiskManager::DiskManager(const char* file_path, unsigned int espaco_de_memoria, 
     mapMemory(0);
 }
 
+DiskManager::DiskManager(const char* disk_manager_file, const char* disk_data_file){
+    abrirArquivo(disk_data_file);
+    loadDiskMetaData(disk_manager_file);
+    mapMemory(0);
+
+
+}
+
+void DiskManager::abrirArquivo(const char* file_path){
+    arquivo = open(file_path, O_RDWR | O_CREAT, 0600);
+    if (arquivo == -1) {
+        std::cerr << "Falha ao abrir o arquivo: " << strerror(errno) << std::endl;
+        return;
+    }
+}
+
 int DiskManager::criarEspacoNaMemoria(){
     arquivo = open(file_path, O_RDWR | O_CREAT, 0600);
     if (arquivo == -1) {
@@ -244,8 +260,8 @@ void DiskManager::sincronizar(){
 
 
 
-void DiskManager::saveDiskData() {
-    std::ofstream file("../DiskData.ds", std::ios::binary);
+void DiskManager::saveDiskMetaData(const char* disk_manager_file) {
+    std::ofstream file(disk_manager_file, std::ios::binary);
     if (!file) {
         std::cerr << "Erro ao abrir o arquivo" << std::endl;
         return;
@@ -310,6 +326,46 @@ void DiskManager::saveDiskData() {
         std::cerr << "Erro ao escrever vetor_espaco" << std::endl;
         return;
     }
+
+    // Close the file
+    file.close();
+}
+
+void DiskManager::loadDiskMetaData(const char* disk_manager_file){
+    std::ifstream file(disk_manager_file, std::ios::binary);
+    if (!file) {
+        std::cerr << "Erro ao abrir o arquivo" << std::endl;
+        return;
+    }
+
+    // Read fixed-size variables
+    file.read(reinterpret_cast<char*>(&this->espaco_de_memoria), sizeof(this->espaco_de_memoria));
+    file.read(reinterpret_cast<char*>(&this->tamanho_do_bloco), sizeof(this->tamanho_do_bloco));
+    file.read(reinterpret_cast<char*>(&this->quantidade_de_blocos), sizeof(this->quantidade_de_blocos));
+    file.read(reinterpret_cast<char*>(&this->prox_endereco_de_procura), sizeof(this->prox_endereco_de_procura));
+    file.read(reinterpret_cast<char*>(&this->tamanho_do_map), sizeof(this->tamanho_do_map));
+
+    // Read size of vetor_alocacao
+    size_t tamanho_alocacao;
+    file.read(reinterpret_cast<char*>(&tamanho_alocacao), sizeof(tamanho_alocacao));
+
+    // Read vetor_alocacao
+    size_t numBytes = (tamanho_alocacao + 7) / 8; // Round up to the nearest byte
+    std::vector<uint8_t> byteArray(numBytes);
+    file.read(reinterpret_cast<char*>(byteArray.data()), numBytes);
+
+    this->vetor_alocacao.resize(tamanho_alocacao);
+    for (size_t i = 0; i < tamanho_alocacao; ++i) {
+        this->vetor_alocacao[i] = (byteArray[i / 8] & (1 << (i % 8))) != 0;
+    }
+
+    // Read size of vetor_espaco
+    size_t tamanho_espaco;
+    file.read(reinterpret_cast<char*>(&tamanho_espaco), sizeof(tamanho_espaco));
+
+    // Read vetor_espaco
+    this->vetor_espaco.resize(tamanho_espaco);
+    file.read(reinterpret_cast<char*>(this->vetor_espaco.data()), tamanho_espaco * sizeof(unsigned short int));
 
     // Close the file
     file.close();

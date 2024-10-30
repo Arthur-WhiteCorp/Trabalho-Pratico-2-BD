@@ -86,7 +86,7 @@ int main(int argc, char* argv[]){
     BlocoDeArquivo bloco_de_arquivo;
     bloco_de_arquivo.tipo = Arquivo;
     bloco_de_arquivo.meta_dados = registro;
-    bloco_de_arquivo.registro_a[0] = 'a';
+    bloco_de_arquivo.registro_a[0] = 'b';
     bloco_de_arquivo.registro_b[0] = 'b';
     bloco_de_arquivo.endereço_bucket_overflow = 0;
 
@@ -98,6 +98,7 @@ int main(int argc, char* argv[]){
     std::cout << "primeiro alocado: " << endereco << std::endl;
 
     block_manager.EscreverBloco(&bloco_de_arquivo,endereco);
+
     
     BlocoDeArquivo* bloco_lido = static_cast<BlocoDeArquivo*>(block_manager.LerBloco(endereco));
 
@@ -117,6 +118,8 @@ int main(int argc, char* argv[]){
     std::cout << *recebido << std::endl;
     std::cout << texto_recebido << std::endl;
     std::cout << *ano_recebido << std::endl;
+
+    block_manager.EscreverBloco(bloco_lido,endereco);
 
     std::cout << "-------testes com o hash maker------" << std::endl;
   
@@ -158,6 +161,7 @@ int main(int argc, char* argv[]){
 
     
 
+    banco_de_dados.saveDiskMetaData("./metadata.dsk");
 
 
     return 0;

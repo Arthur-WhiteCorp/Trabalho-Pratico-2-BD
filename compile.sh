@@ -1,10 +1,19 @@
 #!/usr/bin/bash
 
 #Criando os .o dos src
+shopt -s extglob
 
 
 SRC_FILES=(./src/*.cpp)
+SRC_MAINS=("upload.cpp" "seek.cpp" "item3")
 
+for main in "${SRC_MAINS[@]}"; do
+    for i in "${!SRC_FILES[@]}"; do
+        if [ "${SRC_FILES[i]}" = "./src/$main" ]; then
+            unset "SRC_FILES[i]"
+        fi
+    done
+done
 
 if [ -d ./src  ]
 then
@@ -30,6 +39,17 @@ else
 fi
 
 
+if [ -z "$1" ]
+    then 
+        echo digite o nome do arquivo src
+        echo "ex: ./compile.sh <src_name>"
+        exit 1
+    else 
+        :
+fi
+
+
+
 
 for file in "${SRC_FILES[@]}"
 do  
@@ -45,12 +65,9 @@ done
 
 
 
-if [ -z "$1" ]
-    then 
-        g++ ./obj/*.o -o "./bin/my_project"
-        echo "PROJECT_NAME=my_project" > project.config
-    else 
-        g++ ./obj/*.o -o "./bin/$1"     
-        echo "PROJECT_NAME=$1" > project.config
-fi
+EXE_NAME="${1%.cpp}"
+g++ ./src/"$1" -I ./include ./obj/!(*upload*|*seek*).o -o ./bin/"$EXE_NAME"
+echo "PROJECT_NAME=$EXE_NAME" > project.config
+       
+
 
