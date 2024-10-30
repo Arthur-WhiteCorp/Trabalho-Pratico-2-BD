@@ -157,3 +157,7 @@ void BlockManager::EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned sh
 
 }
 
+void BlockManager::setCatalogo(Endereco endereco){
+    BlocoDeCatalogo catalogo;
+
+}

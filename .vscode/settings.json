@@ -60,6 +60,9 @@
         "span": "cpp",
         "variant": "cpp",
         "cstring": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

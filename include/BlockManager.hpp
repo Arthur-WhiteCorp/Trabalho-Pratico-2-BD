@@ -66,6 +66,7 @@ class BlockManager{
 private:
     Registro tipo_de_registro; // cada bloco de Arquivo recebe  somente um tipo de registro
     DiskManager* banco_de_dados;
+    BlocoDeCatalogo catalogo;
 
 public:
     BlockManager(DiskManager* banco_de_dados,  Registro registro);
@@ -83,8 +84,9 @@ public:
 
     void* LerCampo(BlocoDeArquivo* bloco,char registro, unsigned short int campo); // registro a ou b
     void EscreverCampo(BlocoDeArquivo* bloco,char registro,unsigned short int campo, const void* data);
-    void setCatalogo();
-    void lerCatalogo();
+    void setCatalogo(Endereco endereco); // escreve um bloco de catalogo no endereço
+    void atualizarCatalogo();
+    BlocoDeCatalogo lerCatalogo(Endereco endereco); // carrega um bloco de catalogo do endereço
 
 };
 
