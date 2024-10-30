@@ -157,11 +157,11 @@ Endereco DiskManager::getProxEnderecoDeProcura() const{
 
 void* DiskManager::read(Endereco endereco){
         
-   // if (vetor_alocacao[endereco]){
-   //     std::cerr << "Erro: endereço não alocado\n";
-   //     std::cout << vetor_alocacao[endereco] << std::endl;
-   //     return nullptr; // não escreve em endereços não alocados
-   // }
+    if (vetor_alocacao[endereco]){
+        std::cerr << "Erro: endereço não alocado\n";
+        std::cout << vetor_alocacao[endereco] << std::endl;
+        return nullptr; // não escreve em endereços não alocados
+    }
    
     Endereco endereco_real = (endereco-ultimo_map) * tamanho_do_bloco;
 

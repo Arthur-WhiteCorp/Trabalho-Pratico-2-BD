@@ -13,6 +13,17 @@ HashManager::HashManager(unsigned long long quantidade_de_linhas_do_arquivo, Dis
     setHashTable();
 }
 
+HashManager::HashManager(DiskManager* banco_de_dados, BlockManager* block_manager){
+    quantidade_de_blocos_de_hash = block_manager->getQuantidadeDeBlocosDeHash();
+    quantidade_de_blocos_enderecados_no_hash = block_manager->getQuantidadeDeBlocosEnderecadosNoHash();
+    quantidade_de_blocos_de_arquivo = (3 * (quantidade_de_blocos_enderecados_no_hash - 1)) / 4;
+    tamanho_do_hash = sizeof(Endereco) * quantidade_de_blocos_enderecados_no_hash;
+    hash_table = new Endereco[quantidade_de_blocos_enderecados_no_hash];
+    loadHash(block_manager->getEnderecoHashNoCatalogo());
+
+
+}
+
 void HashManager::setQuantidadeDeBlocosDeArquivo(unsigned long long quantidade_de_linhas_do_arquivo){
     unsigned long long tamanho = (quantidade_de_linhas_do_arquivo / REGISTROS_POR_BLOCO) + 1;
     quantidade_de_blocos_de_arquivo = tamanho;
@@ -24,6 +35,7 @@ void HashManager::setQuantidadeDeBlocosDeArquivo(unsigned long long quantidade_d
 void HashManager::setTamanhoDoHash(){
     unsigned long long memoria = sizeof(Endereco) * quantidade_de_blocos_enderecados_no_hash;
     std::cout << "este é o tamanho do hash:" <<  memoria  << std::endl;
+    tamanho_do_hash = memoria;
 }
 
 void HashManager::setQuantidadeDeBlocosDeHash(){
@@ -249,6 +261,7 @@ void HashManager::saveHash(){
     BlocoDeHash bloco_de_hash;
     Endereco endereco_de_insercao;
     int posicao_atual = 0;
+    bool eh_primeiro_bloco = true;
 
     for (int i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
         bloco_de_hash.items_do_hash[posicao_atual] = hash_table[i];
@@ -257,15 +270,38 @@ void HashManager::saveHash(){
             endereco_de_insercao = banco_de_dados->memoryAlloc(1u);
             block_manager->EscreverBloco(&bloco_de_hash,endereco_de_insercao);
             posicao_atual = 0;
+            if (eh_primeiro_bloco){
+                block_manager->setEnderecoHashNoCatalogo(endereco_de_insercao);
+                eh_primeiro_bloco = false;
+            }
         }
     }
 
     if (posicao_atual > 0) {
-        // Zero out unused slots to avoid "dirty" data
         for (int i = posicao_atual; i < ITEMS_DE_HASH_POR_BLOCO; i++) {
             bloco_de_hash.items_do_hash[i] = 0;
         }
         endereco_de_insercao = banco_de_dados->memoryAlloc(1u);
         block_manager->EscreverBloco(&bloco_de_hash, endereco_de_insercao);
     }
+}
+
+void HashManager::loadHash(Endereco endereco){
+    BlocoDeHash* bloco_de_hash;
+    Endereco endereco_de_leitura = block_manager->getEnderecoHashNoCatalogo();
+    int posicao_atual = 0;
+    bool eh_primeiro_bloco = true;
+
+    for (int i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
+        if (posicao_atual == 0){
+            bloco_de_hash = static_cast<BlocoDeHash*> (block_manager->LerBloco(endereco_de_leitura));
+            endereco_de_leitura++;
+        }
+        if (posicao_atual == ITEMS_DE_HASH_POR_BLOCO) {
+            posicao_atual = 0; // Reset for the next block
+        }
+        hash_table[i] = bloco_de_hash->items_do_hash[posicao_atual];
+        posicao_atual++;
+    }
+    free(bloco_de_hash);
 }

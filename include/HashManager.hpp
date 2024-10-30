@@ -38,7 +38,8 @@ private:
     Linha buscaOverflow(unsigned int id, Endereco overflow);
 public:
     HashManager(unsigned long long quantidade_de_linhas_do_arquivo, DiskManager* banco_de_dados
-                ,BlockManager* block_manager); 
+                ,BlockManager* block_manager);
+    HashManager(DiskManager* banco_de_dados ,BlockManager* block_manager);
     void inserirNoHash(unsigned int id, Linha dados); // insere no hash
     Linha buscarNoHash(unsigned int id); // busca no hash
     void saveHash();
