@@ -77,6 +77,10 @@ void BlockManager::EscreverBloco(void* bloco, Endereco endereco){
         banco_de_dados->write(endereco, bloco_de_catalogo);
         break;
     }
+    default:{
+        std::cerr << "Erro: tipo de bloco inválido" << std::endl;
+        break;
+    }
     }   
 
 }
