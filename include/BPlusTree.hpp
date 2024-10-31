@@ -24,7 +24,7 @@ class BPlusTree {
 public:
     // construtor da árvore B+, inicializando com um BlockManager e ordem
     BPlusTree(BlockManager& bm, int ord = 4) : blockManager(bm), order(ord) {
-        // Inicializa a raiz como um novo bloco de índice
+        // inicializa a raiz como um novo bloco de índice
         BPlusTreeNode rootNode(true);             // cria nó raiz como folha inicialmente
         rootAddress = blockManager.getDiskManager().memoryAlloc(blockManager.getDiskManager().getTamanhoDoBloco());
         blockManager.EscreverBloco(&rootNode, rootAddress);
