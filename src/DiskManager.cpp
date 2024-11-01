@@ -326,7 +326,6 @@ void DiskManager::saveDiskMetaData(const char* disk_manager_file) {
         std::cerr << "Erro ao escrever vetor_espaco" << std::endl;
         return;
     }
-
     // Close the file
     file.close();
 }
@@ -351,14 +350,13 @@ void DiskManager::loadDiskMetaData(const char* disk_manager_file){
 
     // Read vetor_alocacao
     size_t numBytes = (tamanho_alocacao + 7) / 8; // Round up to the nearest byte
-    std::vector<uint8_t> byteArray(numBytes);
-    file.read(reinterpret_cast<char*>(byteArray.data()), numBytes);
+    std::vector<char> byteArray(numBytes);
+    file.read(byteArray.data(), numBytes);
 
     this->vetor_alocacao.resize(tamanho_alocacao);
     for (size_t i = 0; i < tamanho_alocacao; ++i) {
         this->vetor_alocacao[i] = (byteArray[i / 8] & (1 << (i % 8))) != 0;
     }
-
     // Read size of vetor_espaco
     size_t tamanho_espaco;
     file.read(reinterpret_cast<char*>(&tamanho_espaco), sizeof(tamanho_espaco));

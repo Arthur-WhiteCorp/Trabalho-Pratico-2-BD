@@ -83,32 +83,14 @@ int main(int argc, char* argv[]){
     std::copy(temp_2.begin(), temp_2.end(), registro.tipos_dos_campos.begin()); 
 
 
-    BlocoDeArquivo bloco_de_arquivo;
-    bloco_de_arquivo.tipo = Arquivo;
-    bloco_de_arquivo.meta_dados = registro;
-    bloco_de_arquivo.registro_a[0] = 'b';
-    bloco_de_arquivo.registro_b[0] = 'b';
-    bloco_de_arquivo.endereço_bucket_overflow = 0;
-
     BlockManager block_manager = BlockManager(&banco_de_dados,registro);
 
     unsigned long long endereco = banco_de_dados.memoryAlloc(1U);
-
-
-    std::cout << "primeiro alocado: " << endereco << std::endl;
-
-
     block_manager.setCatalogo(endereco);
     block_manager.carregarCatalogo();
 
-    block_manager.setEnderecoHashNoCatalogo(777ull);
 
-    block_manager.atualizarCatalogo();
-
-    std::cout << block_manager.getEnderecoHashNoCatalogo() << std::endl;
-
-
-    std::cout << "-------testes com o hash maker------" << std::endl;
+    std::cout << "-------criando hash------" << std::endl;
   
     while (!(data_base_csv.getLineCSV().empty())){
         unsigned int id = (unsigned int)data_base_csv.getIdDaLinhaAtual();
@@ -135,10 +117,6 @@ int main(int argc, char* argv[]){
         "teste 4"
     );
     arquivo_hash.inserirNoHash(7789u, linha_teste);
-    arquivo_hash.inserirNoHash(7789u, linha_teste);
-    arquivo_hash.inserirNoHash(7789u, linha_teste);
-    arquivo_hash.inserirNoHash(7789u, linha_teste);
-    arquivo_hash.inserirNoHash(7789u, linha_teste);
 
 
 
@@ -147,9 +125,8 @@ int main(int argc, char* argv[]){
     std::cout << std::get<6>(buscada_no_hash) << std::endl;
 
     
-
-    banco_de_dados.saveDiskMetaData("./metadata.dsk");
     arquivo_hash.saveHash();
+    banco_de_dados.saveDiskMetaData("./metadata.dsk");
 
     return 0;
 }

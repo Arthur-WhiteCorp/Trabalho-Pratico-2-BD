@@ -24,6 +24,7 @@ private:
     Endereco* hash_table;
     BlocoDeArquivo bloco_de_inicialização_padrao;
     Endereco endereco_do_ultimo_bloco_de_overflow;
+    unsigned int quantidade_de_bloco_lidos_na_ultima_busca = 0;
 
     unsigned long long hash(unsigned int id); // estou usando hash multiplicativo
     void setQuantidadeDeBlocosDeArquivo(unsigned long long quantidade_de_linhas_do_arquivo);
@@ -42,8 +43,11 @@ public:
     HashManager(DiskManager* banco_de_dados ,BlockManager* block_manager);
     void inserirNoHash(unsigned int id, Linha dados); // insere no hash
     Linha buscarNoHash(unsigned int id); // busca no hash
+    unsigned int getQuatidadeDeBlocosLidos(); // ultima quantidade de blocos lidos na ultima busca
+
     void saveHash();
     void loadHash(Endereco endereco);
+
 
 };
 

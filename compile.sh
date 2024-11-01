@@ -5,7 +5,7 @@ shopt -s extglob
 
 
 SRC_FILES=(./src/*.cpp)
-SRC_MAINS=("upload.cpp" "seek.cpp" "item3")
+SRC_MAINS=("upload.cpp" "seek1.cpp" "findrec.cpp" "seek2.cpp")
 
 for main in "${SRC_MAINS[@]}"; do
     for i in "${!SRC_FILES[@]}"; do

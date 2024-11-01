@@ -14,6 +14,8 @@ HashManager::HashManager(unsigned long long quantidade_de_linhas_do_arquivo, Dis
 }
 
 HashManager::HashManager(DiskManager* banco_de_dados, BlockManager* block_manager){
+    this->banco_de_dados = banco_de_dados;
+    this->block_manager = block_manager;
     quantidade_de_blocos_de_hash = block_manager->getQuantidadeDeBlocosDeHash();
     quantidade_de_blocos_enderecados_no_hash = block_manager->getQuantidadeDeBlocosEnderecadosNoHash();
     quantidade_de_blocos_de_arquivo = (3 * (quantidade_de_blocos_enderecados_no_hash - 1)) / 4;
@@ -53,8 +55,7 @@ void HashManager::setHashTable(){
     hash_table = new Endereco[quantidade_de_blocos_enderecados_no_hash];
     for (unsigned long long i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
         hash_table[i] = banco_de_dados->memoryAlloc(1u);
-        block_manager->EscreverBloco(&bloco_de_inicialização_padrao, hash_table[i]);
-       
+        block_manager->EscreverBloco(&bloco_de_inicialização_padrao, hash_table[i]);       
     }
     banco_de_dados->sincronizar();
 
@@ -164,7 +165,8 @@ Linha HashManager::buscarNoHash(unsigned int id){
     Linha registro;
     unsigned int id_registro_a = *static_cast<unsigned int*>(block_manager->LerCampo(bloco,'a',1u));
     unsigned int id_registro_b = *static_cast<unsigned int*>(block_manager->LerCampo(bloco,'b',1u));
-
+    quantidade_de_bloco_lidos_na_ultima_busca = 0;
+    quantidade_de_bloco_lidos_na_ultima_busca++;
     if (id == id_registro_a){
         achado = true;
         localizacao = 'a';
@@ -190,11 +192,13 @@ Linha HashManager::buscarNoHash(unsigned int id){
         citacoes, 
         atualizacoes, 
         snippet);
-    }else if (!achado){
-        return buscaOverflow(id,bloco->endereço_bucket_overflow);
+
+        return registro;
     }
 
-    return registro;
+    return buscaOverflow(id,bloco->endereço_bucket_overflow);
+    
+
 
 }
 
@@ -203,6 +207,7 @@ Linha HashManager::buscaOverflow(unsigned int id, Endereco overflow){
     bool achado = false;
     char localizacao;
     BlocoDeArquivo* bloco = static_cast<BlocoDeArquivo*>(block_manager->LerBloco(overflow));
+    quantidade_de_bloco_lidos_na_ultima_busca++;
 
     unsigned int id_registro_a = *static_cast<int*>(block_manager->LerCampo(bloco,'a',1u));
     unsigned int id_registro_b = *static_cast<int*>(block_manager->LerCampo(bloco,'b',1u));
@@ -244,6 +249,9 @@ Linha HashManager::buscaOverflow(unsigned int id, Endereco overflow){
 
 }
 
+unsigned int HashManager::getQuatidadeDeBlocosLidos(){
+    return quantidade_de_bloco_lidos_na_ultima_busca;
+}
 void HashManager::setBlocoDeInicializacaoPadrao(){
     bloco_de_inicialização_padrao.endereço_bucket_overflow = banco_de_dados->memoryAlloc(1u);
     bloco_de_inicialização_padrao.meta_dados = block_manager->getTIpoDeRegistro();
@@ -262,7 +270,6 @@ void HashManager::saveHash(){
     Endereco endereco_de_insercao;
     int posicao_atual = 0;
     bool eh_primeiro_bloco = true;
-
     for (int i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
         bloco_de_hash.items_do_hash[posicao_atual] = hash_table[i];
         posicao_atual++;
@@ -270,11 +277,17 @@ void HashManager::saveHash(){
             endereco_de_insercao = banco_de_dados->memoryAlloc(1u);
             block_manager->EscreverBloco(&bloco_de_hash,endereco_de_insercao);
             posicao_atual = 0;
+            BlocoDeHash* bloco_de_hash = static_cast<BlocoDeHash*> (block_manager->LerBloco(endereco_de_insercao));
+            std::cout << "bloco de hash no endeco: " << endereco_de_insercao << std::endl;
+            for (Endereco e: bloco_de_hash->items_do_hash){
+                std::cout << e << std::endl;
+            }
             if (eh_primeiro_bloco){
+                std::cout << "eh primeiro bloco" << endereco_de_insercao << std::endl;
                 block_manager->setEnderecoHashNoCatalogo(endereco_de_insercao);
                 eh_primeiro_bloco = false;
             }
-        }
+        }    
     }
 
     if (posicao_atual > 0) {
@@ -284,23 +297,31 @@ void HashManager::saveHash(){
         endereco_de_insercao = banco_de_dados->memoryAlloc(1u);
         block_manager->EscreverBloco(&bloco_de_hash, endereco_de_insercao);
     }
+    block_manager->setQuantidadeDeBlocosDeHash(quantidade_de_blocos_de_hash);
+    block_manager->setQuantidadeDeBlocosEnderecadosNoHash(quantidade_de_blocos_enderecados_no_hash);
+    block_manager->atualizarCatalogo();
+    banco_de_dados->sincronizar();
 }
 
 void HashManager::loadHash(Endereco endereco){
     BlocoDeHash* bloco_de_hash;
-    Endereco endereco_de_leitura = block_manager->getEnderecoHashNoCatalogo();
+    Endereco endereco_de_leitura = endereco;
     int posicao_atual = 0;
     bool eh_primeiro_bloco = true;
 
     for (int i = 0; i < quantidade_de_blocos_enderecados_no_hash; i++){
-        if (posicao_atual == 0){
-            bloco_de_hash = static_cast<BlocoDeHash*> (block_manager->LerBloco(endereco_de_leitura));
-            endereco_de_leitura++;
-        }
+        
         if (posicao_atual == ITEMS_DE_HASH_POR_BLOCO) {
             posicao_atual = 0; // Reset for the next block
         }
+
+        if (posicao_atual == 0){
+            bloco_de_hash = static_cast<BlocoDeHash*> (block_manager->LerBloco(endereco_de_leitura));
+            endereco_de_leitura = endereco_de_leitura + 1ull;
+        }
+
         hash_table[i] = bloco_de_hash->items_do_hash[posicao_atual];
+
         posicao_atual++;
     }
     free(bloco_de_hash);
