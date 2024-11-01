@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
         Registro::Data, 
         Registro::VarChar
         };
+    std::copy(temp_2.begin(), temp_2.end(), registro.tipos_dos_campos.begin()); 
 
     BlockManager block_manager = BlockManager(&data_base,registro);
     block_manager.carregarCatalogo(0ull);
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]) {
     }
     std::cout << "Quantidade de blocos lidos na busca: " <<
                   hash_manager.getQuatidadeDeBlocosLidos() << std::endl;
-    std::cout << "BLocos de arquivo: " << block_manager.getQuantidadeDeBlocosEnderecadosNoHash() << std::endl;
+    std::cout << "Blocos de arquivo: " << block_manager.getQuantidadeDeBlocosEnderecadosNoHash() << std::endl;
 
     return 0;
 }
