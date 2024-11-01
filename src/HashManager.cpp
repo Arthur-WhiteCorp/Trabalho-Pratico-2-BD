@@ -278,12 +278,7 @@ void HashManager::saveHash(){
             block_manager->EscreverBloco(&bloco_de_hash,endereco_de_insercao);
             posicao_atual = 0;
             BlocoDeHash* bloco_de_hash = static_cast<BlocoDeHash*> (block_manager->LerBloco(endereco_de_insercao));
-            std::cout << "bloco de hash no endeco: " << endereco_de_insercao << std::endl;
-            for (Endereco e: bloco_de_hash->items_do_hash){
-                std::cout << e << std::endl;
-            }
             if (eh_primeiro_bloco){
-                std::cout << "eh primeiro bloco" << endereco_de_insercao << std::endl;
                 block_manager->setEnderecoHashNoCatalogo(endereco_de_insercao);
                 eh_primeiro_bloco = false;
             }

@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     Linha buscada_no_hash = hash_manager.buscarNoHash(id);
     Linha vazio = std::make_tuple(0, "", 0, "", 0, "", "");
 
-    if (buscada_no_hash != vazio and id != 0){
+    if (buscada_no_hash != vazio and id >= 0){
         std::cout << "id: " << std::get<0>(buscada_no_hash) << std::endl;
         std::cout << "titulo: " << std::get<1>(buscada_no_hash) << std::endl;
         std::cout << "ano: " << std::get<2>(buscada_no_hash) << std::endl;
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     }else{
         std::cout << "Registro Nao Encontrado" << std::endl;
     }
-    std::cout << "Quantidade de blocos lidos na busca>: " <<
+    std::cout << "Quantidade de blocos lidos na busca: " <<
                   hash_manager.getQuatidadeDeBlocosLidos() << std::endl;
     std::cout << "BLocos de arquivo: " << block_manager.getQuantidadeDeBlocosEnderecadosNoHash() << std::endl;
 
