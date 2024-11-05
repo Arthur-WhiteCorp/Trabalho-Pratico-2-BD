@@ -8,9 +8,9 @@ Este projeto implementa a organização e indexação de um arquivo de dados de 
 
 ## Como Compilar:
 ```bash
-./compile.sh <project_name>
+./compile.sh <fileName.cpp>
 ```
-Nome padrão: `my_project`
+Nome do executável: `fileName`
 
 ## Como Executar:
 ```bash
