@@ -4,7 +4,7 @@
 // buscar pela B+Tree no índice secundário (Título)
 void seek2(BPlusTree& tree, std::string titulo) {
     // assumindo que o ID é a chave e o título é o valor associado na B+Tree
-    std::string resultado = tree.search(std::hash<std::string>{}(titulo)); // Usando um hash para o título como chave
+    std::string resultado = tree.search(std::hash<std::string>{}(titulo)); // hash para o título como chave
     if (resultado != "Artigo não encontrado") {
         std::cout << "Artigo encontrado! ID: " << resultado << std::endl;
         std::cout << "Blocos lidos: " << std::endl;
