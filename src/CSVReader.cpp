@@ -32,74 +32,103 @@ void CSVReader::setNumeroDeColunas(unsigned int num_colunas){
 }
 
 std::vector<std::string> CSVReader::getLineCSV(){
-
-    linha_atual.clear();
-
-    char c;
-    std::string campo = "";
-    bool is_inside_quotes = false;
-    int fields_qty = 0;
+    char c, prev_char;
+    std::string campo = "", complete_line = "", null_str_aux = "";
+    bool is_inside_quotes = false, is_field_empty = false;
+    int fields_qty = 0, null_counter_aux = 0;
 
     while(my_csv.get(c)) {
 
+        // Ignora espaços em branco e break lines
         if (!is_inside_quotes && ((c == ' ') || (c == '\n'))) {
             continue;
-        }
-
-        if (c == ';' && !is_inside_quotes) {
-            fields_qty++;
-            // std::cout << campo << "\n\n" << std::endl;
-
-            if (fields_qty == 0){
-                id_da_linha_atual = stoi(campo);
+        } else {
+            // Verifica o caso de termos "campo1";____;"campo2"
+            if (!is_inside_quotes && c == ';' && c == prev_char) {
+                fields_qty++;
+                complete_line += "NULL";
             }
 
-            linha_atual.emplace_back(campo);
-            campo = "";
-
+            // Identifica uma linha completa
             if (fields_qty == 7) {
+                // USAR REGEX para extrair os campos
+                std::vector<std::string> fields;
+                std::string currentField;
+                bool inQuotes = false;
+                char quoteChar = 0;
+
+                for (size_t i = 0; i < complete_line.size(); ++i) {
+                    char c = complete_line[i];
+
+                    if (!inQuotes && (c == '"')) {  // Início de um campo entre aspas
+                        inQuotes = true;
+                        quoteChar = '"';
+                    } else if (inQuotes && c == quoteChar) {  // Fim de um campo entre aspas
+                        inQuotes = false;
+                    } else if (c == ';' && !inQuotes) {  // Fim de um campo fora de aspas
+                        fields.push_back(currentField.empty() ? "NULL" : currentField);
+                        currentField.clear();
+                    } else {
+                        currentField += c;
+                    }
+                }
+
+                if (!currentField.empty()) {
+                    fields.push_back(currentField.empty() ? "NULL" : currentField);
+                }
+
+                // Remover aspas dos campos, se presente
+                for (std::string& field : fields) {
+                    if (field.front() == '"' && field.back() == '"') {
+                        field = field.substr(1, field.size() - 2);
+                    }
+                }
+        
+                std::cout << fields[0] << std::endl;
+                id_da_linha_atual = stoi(fields[0]);
+
+                // std::cout << complete_line << std::endl;
                 numero_de_linhas_lido++;
                 fields_qty = 0;
+                complete_line = "";
+                null_str_aux = "";
+                null_counter_aux = 0;
+                linha_atual.clear();
+                if (c == '"') {
+                    is_inside_quotes = !is_inside_quotes;
+                }
+                complete_line += c; 
+            } else {
+
+                if (fields_qty == 6 && c != ';' && null_counter_aux <= 4) {
+                    null_str_aux += c;
+                    null_counter_aux++;
+                    if (null_counter_aux == 4 && null_str_aux == "NULL") {
+                        fields_qty++;
+                    }
+                }
+
+                if (c == '"') {
+                    is_inside_quotes = !is_inside_quotes;
+                }
+                complete_line += c; 
             }
-        }
 
-        if (c == '"') {
-            is_inside_quotes = !is_inside_quotes;
-        }
+            // Incrementa a quantidade de campos ao fechar aspas
+            if (!is_inside_quotes && c == '"') {
+                fields_qty++;
+            }
 
-        // inicio de um campo
-        if (is_inside_quotes && (c != '"')) {
-            campo += c;
+            prev_char = c;
         }
     }
 
-    std::cout << campo << std::endl;
+    numero_de_linhas_lido++;
+
+    std::cout << complete_line << std::endl;
 
     arquivo_terminado = true;
     return linha_atual;
-
-    // if (getline(my_csv, line)){
-        // std::cout << "Linha completa lida: " << line << std::endl;
-
-        // linha_atual.emplace_back(line);  // Armazena a linha completa em `linha_atual` se necessário
-
-        // while ((linha_atual.size()) <= (numero_de_colunas - 1)){ // lê enquanto o numero de colunas for menor ou
-        //     if (linha_atual.size() < numero_de_colunas -1 ){
-        //         getline(my_csv, campo, ';');                
-        //         linha_atual.emplace_back(campo);
-        //     }else{
-        //         getline(my_csv,campo);
-        //         linha_atual.emplace_back(campo);
-        //     }
-
-        // }
-        // std::string numero_sem_aspas = std::regex_replace(linha_atual[0], std::regex("\""), "");
-        // id_da_linha_atual = stoi(numero_sem_aspas);                       
-        // numero_de_linhas_lido++;
-    // }else{
-    //     arquivo_terminado = true;
-    // }
-    // return linha_atual;
 }
 std::vector<std::string> CSVReader::getLinhaAtual(){
     if (linha_atual.empty()){
@@ -151,4 +180,3 @@ void CSVReader::resetarLocalizacaoDoarquivo(){
 void CSVReader::fecharArquivo(){
     my_csv.close();
 }
-
